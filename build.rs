@@ -2,33 +2,13 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rerun-if-changed=wrapper.h");
-    println!("cargo:rerun-if-changed=SimConnect.dll");
-    println!("cargo:rerun-if-changed=SimConnect.lib");
-
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let binary_name = "SimConnect";
-    let binary_name_dll = &format!("{binary_name}.dll");
-
-    let simconnect_path = PathBuf::from(env::current_dir().unwrap().to_str().unwrap());
-    let simconnect_dir = simconnect_path.as_path().to_str().unwrap();
-    println!("cargo:rustc-link-search={}", simconnect_dir);
-    println!("cargo:rustc-link-lib={}", binary_name);
-
-    // copy the dll
-    let mut source_path = PathBuf::from(simconnect_dir);
-    source_path.push(binary_name_dll);
-
-    let mut target_path = out_path.clone();
-    target_path.pop();
-    target_path.pop();
-    target_path.pop();
-    target_path.push(binary_name_dll);
-
-    std::fs::copy(source_path.as_path(), target_path.as_path()).unwrap();
+    println!("cargo:rustc-link-search=ffi/lib");
+    println!("cargo:rustc-link-lib=static=SimConnect");
+    println!("cargo:rerun-if-changed=ffi/include/SimConnect.h");
+    println!("cargo:rerun-if-changed=ffi/lib/SimConnect.lib");
 
     let bindings = bindgen::Builder::default()
-        .header("wrapper.h")
+        .header("ffi/include/SimConnect.h")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .clang_args(&["-x", "c++"])
         .allowlist_function("SimConnect_Open")
@@ -54,7 +34,8 @@ fn main() {
         .generate()
         .expect("Unable to generate bindings");
 
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     bindings
         .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+        .expect("Failed to write the bindings!");
 }
