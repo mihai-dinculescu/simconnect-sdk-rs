@@ -11,11 +11,19 @@
 
 #pragma once
 
-#ifdef _MSFS_WASM
-#ifndef SIMCONNECT_WASM_MODULE
-#define SIMCONNECT_WASM_MODULE "env"
-#endif
-#endif
+// <ASOBO-MOD - GM - now in 64 bit
+#ifndef SIMCONNECT_H_NOMANIFEST
+#if _MSC_FULL_VER >= 140040130
+#if defined(_M_IX86) || defined(_M_X64)
+//#pragma comment(linker,"/manifestdependency:\"type='win32' " \
+//    "name='" "Microsoft..SimConnect" "' " \
+//    "version='" "" "' " \
+//    "processorArchitecture='amd64' " \
+//    "publicKeyToken='" "" "'\"")
+#endif // #if defined(_M_IX86) || defined(_M_X64)
+#endif // #if _MSC_FULL_VER >= 140040130
+#endif // #ifndef SIMCONNECT_H_NOMANIFEST
+// ASOBO-MOD/>
 
 #ifndef DWORD_MAX
 #define DWORD_MAX 0xFFFFFFFF
@@ -117,6 +125,9 @@ SIMCONNECT_ENUM SIMCONNECT_RECV_ID{
 #ifdef ENABLE_SIMCONNECT_EXPERIMENTAL
     SIMCONNECT_RECV_ID_PICK,
 #endif // ENABLE_SIMCONNECT_EXPERIMENTAL
+    SIMCONNECT_RECV_ID_EVENT_EX1,
+    SIMCONNECT_RECV_ID_FACILITY_DATA,
+    SIMCONNECT_RECV_ID_FACILITY_DATA_END,
 };
 
 // Data data types
@@ -276,6 +287,32 @@ SIMCONNECT_ENUM SIMCONNECT_FACILITY_LIST_TYPE{
     SIMCONNECT_FACILITY_LIST_TYPE_NDB,
     SIMCONNECT_FACILITY_LIST_TYPE_VOR,
     SIMCONNECT_FACILITY_LIST_TYPE_COUNT // invalid
+};
+
+SIMCONNECT_ENUM SIMCONNECT_FACILITY_DATA_TYPE{
+    SIMCONNECT_FACILITY_DATA_AIRPORT,
+    SIMCONNECT_FACILITY_DATA_RUNWAY,
+    SIMCONNECT_FACILITY_DATA_START,
+    SIMCONNECT_FACILITY_DATA_FREQUENCY,
+    SIMCONNECT_FACILITY_DATA_HELIPAD,
+    SIMCONNECT_FACILITY_DATA_APPROACH,
+    SIMCONNECT_FACILITY_DATA_APPROACH_TRANSITION,
+    SIMCONNECT_FACILITY_DATA_APPROACH_LEG,
+    SIMCONNECT_FACILITY_DATA_FINAL_APPROACH_LEG,
+    SIMCONNECT_FACILITY_DATA_MISSED_APPROACH_LEG,
+    SIMCONNECT_FACILITY_DATA_DEPARTURE,
+    SIMCONNECT_FACILITY_DATA_ARRIVAL,
+    SIMCONNECT_FACILITY_DATA_RUNWAY_TRANSITION,
+    SIMCONNECT_FACILITY_DATA_ENROUTE_TRANSITION,
+    SIMCONNECT_FACILITY_DATA_TAXI_POINT,
+    SIMCONNECT_FACILITY_DATA_TAXI_PARKING,
+    SIMCONNECT_FACILITY_DATA_TAXI_PATH,
+    SIMCONNECT_FACILITY_DATA_TAXI_NAME,
+    SIMCONNECT_FACILITY_DATA_JETWAY,
+    SIMCONNECT_FACILITY_DATA_VOR,
+    SIMCONNECT_FACILITY_DATA_NDB,
+    SIMCONNECT_FACILITY_DATA_WAYPOINT,
+    SIMCONNECT_FACILITY_DATA_ROUTE,
 };
 
 SIMCONNECT_ENUM_FLAGS SIMCONNECT_VOR_FLAGS;                                  // flags for SIMCONNECT_RECV_ID_VOR_LIST
@@ -440,6 +477,20 @@ SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_EVENT_MULTIPLAYER_SESSION_ENDED : public SI
                                                                            // No event specific data, for now
                                                                        };
 
+SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_EVENT_EX1 : public SIMCONNECT_RECV // when dwID == SIMCONNECT_RECV_ID_EVENT_EX1
+{
+    static const DWORD UNKNOWN_GROUP = DWORD_MAX;
+    DWORD uGroupID;
+    DWORD uEventID;
+
+    // Doesn t support array so, let s list
+    DWORD dwData0;
+    DWORD dwData1;
+    DWORD dwData2;
+    DWORD dwData3;
+    DWORD dwData4;
+};
+
 // SIMCONNECT_DATA_RACE_RESULT
 SIMCONNECT_STRUCT SIMCONNECT_DATA_RACE_RESULT
 {
@@ -596,6 +647,23 @@ SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_VOR_LIST : public SIMCONNECT_RECV_FACILITIE
     SIMCONNECT_FIXEDTYPE_DATAV(SIMCONNECT_DATA_FACILITY_VOR, rgData, dwArraySize, U1 /*member of UnmanagedType enum*/, SIMCONNECT_DATA_FACILITY_VOR /*cli type*/);
 };
 
+SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_FACILITY_DATA : public SIMCONNECT_RECV
+{
+    DWORD UserRequestId;
+    DWORD UniqueRequestId;
+    DWORD ParentUniqueRequestId;
+    DWORD Type;
+    DWORD IsListItem;
+    DWORD ItemIndex;
+    DWORD ListSize;
+    SIMCONNECT_DATAV(Data, Type, );
+};
+
+SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_FACILITY_DATA_END : public SIMCONNECT_RECV
+{
+    DWORD RequestId;
+};
+
 #ifdef ENABLE_SIMCONNECT_EXPERIMENTAL
 
 SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_PICK : public SIMCONNECT_RECV // when dwID == SIMCONNECT_RECV_ID_RESERVED_KEY
@@ -664,26 +732,15 @@ SIMCONNECT_STRUCT SIMCONNECT_DATA_XYZ
 
 #pragma pack(pop)
 
-//----------------------------------------------------------------------------
-//        End of Struct definitions
-//----------------------------------------------------------------------------
-
-typedef void(CALLBACK *DispatchProc)(SIMCONNECT_RECV *pData, DWORD cbData, void *pContext);
+    //----------------------------------------------------------------------------
+    //        End of Struct definitions
+    //----------------------------------------------------------------------------
 
 #if !defined(SIMCONNECTAPI)
-#ifdef _MSFS_WASM
-#ifdef __INTELLISENSE__
-#define MODULE_EXPORT
-#define SIMCONNECTAPI extern "C" HRESULT
-#else
-#define MODULE_EXPORT __attribute__((visibility("default")))
-#define SIMCONNECTAPI extern "C" __attribute__((import_module(SIMCONNECT_WASM_MODULE))) HRESULT
-#endif
-#else
-#define MODULE_EXPORT
 #define SIMCONNECTAPI extern "C" HRESULT __stdcall
 #endif
-#endif
+
+typedef void(CALLBACK *DispatchProc)(SIMCONNECT_RECV *pData, DWORD cbData, void *pContext);
 
 SIMCONNECTAPI SimConnect_MapClientEventToSimEvent(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char *EventName = "");
 SIMCONNECTAPI SimConnect_TransmitClientEvent(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_CLIENT_EVENT_ID EventID, DWORD dwData, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_EVENT_FLAG Flags);
@@ -757,5 +814,11 @@ SIMCONNECTAPI SimConnect_Text(HANDLE hSimConnect, SIMCONNECT_TEXT_TYPE type, flo
 SIMCONNECTAPI SimConnect_SubscribeToFacilities(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_UnsubscribeToFacilities(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type);
 SIMCONNECTAPI SimConnect_RequestFacilitiesList(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_TransmitClientEvent_EX1(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_CLIENT_EVENT_ID EventID, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_EVENT_FLAG Flags, DWORD dwData0, DWORD dwData1 = 0, DWORD dwData2 = 0, DWORD dwData3 = 0, DWORD dwData4 = 0);
+SIMCONNECTAPI SimConnect_AddToFacilityDefinition(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, const char *FieldName);
+SIMCONNECTAPI SimConnect_RequestFacilityData(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *ICAO, const char *Region = "");
+SIMCONNECTAPI SimConnect_SubscribeToFacilities_EX1(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID newElemInRangeRequestID, SIMCONNECT_DATA_REQUEST_ID oldElemOutRangeRequestID);
+SIMCONNECTAPI SimConnect_UnsubscribeToFacilities_EX1(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, bool bUnsubscribeNewInRange, bool bUnsubscribeOldOutRange);
+SIMCONNECTAPI SimConnect_RequestFacilitiesList_EX1(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID);
 
 #endif // _SIMCONNECT_H_
