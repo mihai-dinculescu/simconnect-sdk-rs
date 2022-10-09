@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, AirportData,
     ConditionEnum, DataType, Event, Group, Notification, NotificationData, PeriodEnum,
-    SimConnectError, SimConnectObject,
+    SimConnectError, SimConnectObjectExt,
 };
 
 #[derive(Debug)]
@@ -38,7 +38,7 @@ impl SimConnect {
         })
     }
 
-    pub fn register_object<T: SimConnectObject>(&mut self) -> Result<u32, SimConnectError> {
+    pub fn register_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
         let type_id: String = std::any::type_name::<T>().into();
 
         if self.registered_objects.contains(&type_id) {

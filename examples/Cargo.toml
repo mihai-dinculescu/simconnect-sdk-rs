@@ -1,0 +1,17 @@
+[package]
+name = "simconnect-sdk-examples"
+version = "0.1.0"
+authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
+edition = "2021"
+description = "SimConnect SDK Examples"
+license = "MIT"
+
+[[bin]]
+name = "basic"
+path = "src/basic.rs"
+
+[dependencies]
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [ "env-filter" ] }
+
+simconnect-sdk = { path = "../simconnect-sdk" }

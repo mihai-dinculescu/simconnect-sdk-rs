@@ -1,0 +1,16 @@
+[package]
+name = "simconnect-sdk"
+version = "0.1.0"
+authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
+edition = "2021"
+description = "SimConnect SDK for Rust"
+license = "MIT"
+
+[build-dependencies]
+bindgen = "0.60"
+
+[dependencies]
+num_enum = "0.5"
+tracing = "0.1"
+thiserror = "1.0"
+simconnect-sdk-derive = { path = "../simconnect-sdk-derive" }

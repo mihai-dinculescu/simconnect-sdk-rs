@@ -2,10 +2,10 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rustc-link-search=ffi/lib");
+    println!("cargo:rustc-link-search=simconnect-sdk/ffi/lib");
     println!("cargo:rustc-link-lib=static=SimConnect");
-    println!("cargo:rerun-if-changed=ffi/include/SimConnect.h");
-    println!("cargo:rerun-if-changed=ffi/lib/SimConnect.lib");
+    println!("cargo:rerun-if-changed=simconnect-sdk/ffi/include/SimConnect.h");
+    println!("cargo:rerun-if-changed=simconnect-sdk/ffi/lib/SimConnect.lib");
 
     let bindings = bindgen::Builder::default()
         .header("ffi/include/SimConnect.h")

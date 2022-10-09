@@ -1,4 +1,4 @@
-use crate::{AirportData, Event, SimConnectObject};
+use crate::{AirportData, Event, SimConnectObjectExt};
 
 pub enum Notification {
     Open,
@@ -15,7 +15,7 @@ pub struct NotificationData {
 }
 
 impl NotificationData {
-    pub fn try_into<T: SimConnectObject>(&self) -> Option<T> {
+    pub fn try_into<T: SimConnectObjectExt>(&self) -> Option<T> {
         let type_id: String = std::any::type_name::<T>().into();
 
         if self.type_id == type_id {

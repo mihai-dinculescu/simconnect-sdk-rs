@@ -13,6 +13,3 @@ pub fn setup_logging() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-
-#[allow(dead_code)]
-fn main() {}

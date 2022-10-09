@@ -1,11 +1,10 @@
-use logging::setup_logging;
 use simconnect_sdk::{
     ConditionEnum, DataType, Notification, NotificationData, PeriodEnum, SimConnect,
     SimConnectError,
 };
 use tracing::{error, info};
 
-mod logging;
+use simconnect_sdk_examples::setup_logging;
 
 #[derive(Debug, Clone)]
 pub struct GpsData {
@@ -16,7 +15,7 @@ pub struct GpsData {
     pub gps_ground_speed: f64,
 }
 
-impl simconnect_sdk::SimConnectObject for GpsData {
+impl simconnect_sdk::SimConnectObjectExt for GpsData {
     fn register(client: &mut SimConnect, id: u32) -> Result<(), SimConnectError> {
         client.add_to_data_definition(id, "PLANE LATITUDE", "degrees", DataType::F64)?;
         client.add_to_data_definition(id, "PLANE LONGITUDE", "degrees", DataType::F64)?;
@@ -47,7 +46,7 @@ pub struct OnGround {
     pub sim_on_ground: bool,
 }
 
-impl simconnect_sdk::SimConnectObject for OnGround {
+impl simconnect_sdk::SimConnectObjectExt for OnGround {
     fn register(client: &mut SimConnect, id: u32) -> Result<(), SimConnectError> {
         client.add_to_data_definition(id, "SIM ON GROUND", "bool", DataType::Bool)?;
         client.request_data_on_sim_object(id, PeriodEnum::Second, ConditionEnum::None)?;

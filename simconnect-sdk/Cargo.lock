@@ -380,25 +380,7 @@ version = "0.1.0"
 dependencies = [
  "bindgen",
  "num_enum",
- "simconnect-sdk-derive",
  "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "simconnect-sdk-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "simconnect-sdk-examples"
-version = "0.1.0"
-dependencies = [
- "simconnect-sdk",
  "tracing",
  "tracing-subscriber",
 ]

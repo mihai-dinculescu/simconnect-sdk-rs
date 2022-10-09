@@ -5,5 +5,5 @@
 ```bash
 git clone git@github.com:mihai-dinculescu/simconnect-sdk.git
 cd simconnect-sdk
-RUST_LOG=info cargo run --example basic
+RUST_LOG=info cargo run --bin basic
 ```
