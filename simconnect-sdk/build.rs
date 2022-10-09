@@ -2,10 +2,13 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rustc-link-search=simconnect-sdk/ffi/lib");
-    println!("cargo:rustc-link-lib=static=SimConnect");
     println!("cargo:rerun-if-changed=simconnect-sdk/ffi/include/SimConnect.h");
     println!("cargo:rerun-if-changed=simconnect-sdk/ffi/lib/SimConnect.lib");
+    println!("cargo:rerun-if-changed=simconnect-sdk/ffi/lib/SimConnect.dll");
+
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    println!("cargo:rustc-link-search={}", out_path.to_string_lossy());
+    println!("cargo:rustc-link-lib=static=SimConnect");
 
     let bindings = bindgen::Builder::default()
         .header("ffi/include/SimConnect.h")
@@ -34,8 +37,15 @@ fn main() {
         .generate()
         .expect("Unable to generate bindings");
 
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     bindings
         .write_to_file(out_path.join("bindings.rs"))
-        .expect("Failed to write the bindings!");
+        .expect("Failed to write the bindings");
+
+    let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("Failed to find `CARGO_MANIFEST_DIR`");
+    let lib_path = PathBuf::from(manifest_dir).join("ffi/lib");
+
+    for file in &["SimConnect.lib", "SimConnect.dll"] {
+        std::fs::copy(lib_path.join(file), out_path.join(file))
+            .unwrap_or_else(|_| panic!("Failed to copy `{file}`"));
+    }
 }
