@@ -1,0 +1,59 @@
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+ --> tests/03-field-attr-errors.rs:7:5
+  |
+7 |     pub lat: f64,
+  |     ^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:13:7
+   |
+13 |     #[simconnect]
+   |       ^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:20:7
+   |
+20 |     #[simconnect()]
+   |       ^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:27:7
+   |
+27 |     #[simconnect(name = "PLANE LATITUDE")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:34:7
+   |
+34 |     #[simconnect(unit = "degrees")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:41:7
+   |
+41 |     #[simconnect(name = "PLANE LATITUDE", name = "PLANE LATITUDE")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:48:7
+   |
+48 |     #[simconnect(unit = "degrees", unit = "degrees")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:55:7
+   |
+55 |     #[simconnect(name = "PLANE LATITUDE", unit = "degrees", unit = "degrees")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:62:7
+   |
+62 |     #[simconnect(nameX = "PLANE LATITUDE", unit = "degrees")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(name = "...", unit = "...")]`
+  --> tests/03-field-attr-errors.rs:69:7
+   |
+69 |     #[simconnect(name = "PLANE LATITUDE", unitX = "degrees")]
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

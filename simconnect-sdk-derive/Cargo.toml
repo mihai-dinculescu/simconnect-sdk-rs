@@ -5,11 +5,22 @@ authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
 edition = "2021"
 description = "Macros of SimConnect SDK for Rust"
 license = "MIT"
+autotests = false
+publish = false
 
 [lib]
 proc-macro = true
+
+[[test]]
+name = "tests"
+path = "tests/run.rs"
 
 [dependencies]
 proc-macro2 = "1.0"
 quote = "1.0"
 syn = "1.0"
+once_cell = "1.7"
+
+[dev-dependencies]
+simconnect-sdk = { path = "../simconnect-sdk" }
+trybuild = { version = "1.0", features = ["diff"] }

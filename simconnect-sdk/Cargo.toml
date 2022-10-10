@@ -6,6 +6,10 @@ edition = "2021"
 description = "SimConnect SDK for Rust"
 license = "MIT"
 
+[features]
+default = []
+derive = ["simconnect-sdk-derive"]
+
 [build-dependencies]
 bindgen = "0.60"
 
@@ -13,4 +17,4 @@ bindgen = "0.60"
 num_enum = "0.5"
 tracing = "0.1"
 thiserror = "1.0"
-simconnect-sdk-derive = { path = "../simconnect-sdk-derive" }
+simconnect-sdk-derive = { path = "../simconnect-sdk-derive", optional = true }

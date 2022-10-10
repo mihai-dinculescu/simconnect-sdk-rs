@@ -1,5 +1,6 @@
+/// SimConnect object property data type.
 #[derive(Debug, Clone)]
 pub enum DataType {
-    F64,
+    Float64,
     Bool,
 }

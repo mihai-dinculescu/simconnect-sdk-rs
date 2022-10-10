@@ -1,5 +1,7 @@
 use std::os::raw::c_char;
 
+/// SimConnect event.
+/// As defined at <https://www.prepar3d.com/SDKv3/LearningCenter/utilities/variables/event_ids.html>
 #[derive(Debug, Copy, Clone, num_enum::TryFromPrimitive)]
 #[repr(u32)]
 pub enum Event {

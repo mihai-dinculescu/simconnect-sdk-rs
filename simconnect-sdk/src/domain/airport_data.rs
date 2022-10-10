@@ -1,3 +1,4 @@
+/// Airport data.
 #[derive(Debug, Clone)]
 pub struct AirportData {
     pub icao: String,

@@ -2,10 +2,11 @@ use std::ffi::c_void;
 
 use crate::{
     as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, AirportData,
-    ConditionEnum, DataType, Event, Group, Notification, NotificationData, PeriodEnum,
+    Condition, DataType, Event, Notification, NotificationData, NotificationGroup, Period,
     SimConnectError, SimConnectObjectExt,
 };
 
+/// SimConnect SDK Client.
 #[derive(Debug)]
 pub struct SimConnect {
     pub handle: std::ptr::NonNull<c_void>,
@@ -71,7 +72,7 @@ impl SimConnect {
             )
         });
 
-        let group = Group::Group0;
+        let group = NotificationGroup::Group0;
 
         success!(unsafe {
             bindings::SimConnect_AddClientEventToNotificationGroup(
@@ -98,7 +99,7 @@ impl SimConnect {
         data_type: DataType,
     ) -> Result<(), SimConnectError> {
         let c_type = match data_type {
-            DataType::F64 => bindings::SIMCONNECT_DATATYPE_SIMCONNECT_DATATYPE_FLOAT64,
+            DataType::Float64 => bindings::SIMCONNECT_DATATYPE_SIMCONNECT_DATATYPE_FLOAT64,
             DataType::Bool => bindings::SIMCONNECT_DATATYPE_SIMCONNECT_DATATYPE_INT32,
         };
 
@@ -121,21 +122,22 @@ impl SimConnect {
     pub fn request_data_on_sim_object(
         &self,
         request_id: u32,
-        period: PeriodEnum,
-        condition: ConditionEnum,
+        period: Period,
+        condition: Condition,
+        interval: u32,
     ) -> Result<(), SimConnectError> {
         unsafe {
-            let (simconnect_period, simconnect_interval) = match period {
-                PeriodEnum::VisualFrame { interval } => (
-                    bindings::SIMCONNECT_PERIOD_SIMCONNECT_PERIOD_VISUAL_FRAME,
-                    interval,
-                ),
-                PeriodEnum::Second => (bindings::SIMCONNECT_PERIOD_SIMCONNECT_PERIOD_SECOND, 0),
+            let simconnect_period = match period {
+                Period::Once => bindings::SIMCONNECT_PERIOD_SIMCONNECT_PERIOD_ONCE,
+                Period::VisualFrame => bindings::SIMCONNECT_PERIOD_SIMCONNECT_PERIOD_VISUAL_FRAME,
+                Period::SimFrame => bindings::SIMCONNECT_PERIOD_SIMCONNECT_PERIOD_SIM_FRAME,
+
+                Period::Second => bindings::SIMCONNECT_PERIOD_SIMCONNECT_PERIOD_SECOND,
             };
 
             let simconnect_flags: u32 = match condition {
-                ConditionEnum::None => 0,
-                ConditionEnum::Changed => bindings::SIMCONNECT_DATA_REQUEST_FLAG_CHANGED,
+                Condition::None => 0,
+                Condition::Changed => bindings::SIMCONNECT_DATA_REQUEST_FLAG_CHANGED,
             };
 
             success!(bindings::SimConnect_RequestDataOnSimObject(
@@ -146,7 +148,7 @@ impl SimConnect {
                 simconnect_period,
                 simconnect_flags,
                 0,
-                simconnect_interval,
+                interval,
                 0,
             ));
         }

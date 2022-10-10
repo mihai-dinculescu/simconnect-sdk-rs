@@ -1,66 +1,29 @@
-use simconnect_sdk::{
-    ConditionEnum, DataType, Notification, NotificationData, PeriodEnum, SimConnect,
-    SimConnectError,
-};
+#![allow(dead_code)]
+
+use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
+use simconnect_sdk_examples::setup_logging;
 use tracing::{error, info};
 
-use simconnect_sdk_examples::setup_logging;
-
-#[derive(Debug, Clone)]
-pub struct GpsData {
-    pub lat: f64,
-    pub lon: f64,
-    pub alt: f64,
-    pub gps_ground_magnetic_track: f64,
-    pub gps_ground_speed: f64,
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second")]
+struct GpsData {
+    #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
+    lat: f64,
+    #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
+    lon: f64,
+    #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
+    alt: f64,
+    #[simconnect(name = "GPS GROUND MAGNETIC TRACK", unit = "degrees")]
+    gps_ground_magnetic_track: f64,
+    #[simconnect(name = "GPS GROUND SPEED", unit = "Meters per second")]
+    gps_ground_speed: f64,
 }
 
-impl simconnect_sdk::SimConnectObjectExt for GpsData {
-    fn register(client: &mut SimConnect, id: u32) -> Result<(), SimConnectError> {
-        client.add_to_data_definition(id, "PLANE LATITUDE", "degrees", DataType::F64)?;
-        client.add_to_data_definition(id, "PLANE LONGITUDE", "degrees", DataType::F64)?;
-        client.add_to_data_definition(id, "PLANE ALTITUDE", "meters", DataType::F64)?;
-        client.add_to_data_definition(id, "GPS GROUND MAGNETIC TRACK", "degrees", DataType::F64)?;
-        client.add_to_data_definition(
-            id,
-            "GPS GROUND SPEED",
-            "Meters per second",
-            DataType::F64,
-        )?;
-        client.request_data_on_sim_object(id, PeriodEnum::Second, ConditionEnum::None)?;
-
-        Ok(())
-    }
-}
-
-impl TryFrom<&NotificationData> for GpsData {
-    type Error = ();
-
-    fn try_from(value: &NotificationData) -> Result<Self, Self::Error> {
-        value.try_into::<GpsData>().ok_or(())
-    }
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", condition = "changed")]
 pub struct OnGround {
-    pub sim_on_ground: bool,
-}
-
-impl simconnect_sdk::SimConnectObjectExt for OnGround {
-    fn register(client: &mut SimConnect, id: u32) -> Result<(), SimConnectError> {
-        client.add_to_data_definition(id, "SIM ON GROUND", "bool", DataType::Bool)?;
-        client.request_data_on_sim_object(id, PeriodEnum::Second, ConditionEnum::None)?;
-
-        Ok(())
-    }
-}
-
-impl TryFrom<&NotificationData> for OnGround {
-    type Error = ();
-
-    fn try_from(value: &NotificationData) -> Result<Self, Self::Error> {
-        value.try_into::<OnGround>().ok_or(())
-    }
+    #[simconnect(name = "SIM ON GROUND", unit = "bool")]
+    sim_on_ground: bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -81,11 +44,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 Some(Notification::Data(data)) => {
                     if let Ok(gps_data) = GpsData::try_from(&data) {
-                        info!("GPS Data: {:?}", gps_data);
+                        info!("GPS Data: {gps_data:?}");
                         continue;
                     }
                     if let Ok(on_ground) = OnGround::try_from(&data) {
-                        info!("On Ground data: {:?}", on_ground);
+                        info!("On Ground data: {on_ground:?}");
                         continue;
                     }
                 }
