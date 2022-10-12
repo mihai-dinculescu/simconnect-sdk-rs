@@ -14,6 +14,14 @@ struct GpsData {
     alt: f64,
 }
 
+/// A second data structure that will be used to receive data from SimConnect.
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", condition = "changed")]
+pub struct OnGround {
+    #[simconnect(name = "SIM ON GROUND", unit = "bool")]
+    sim_on_ground: bool,
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = SimConnect::new("Simple Program");
 
@@ -25,12 +33,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Some(Notification::Open) => {
                     println!("Open");
 
-                    // The struct must be registered after the connection is successfully open
+                    // The structs must be registered after the connection is successfully open
                     client.register_object::<GpsData>()?;
+                    client.register_object::<OnGround>()?;
                 }
                 Some(Notification::Data(data)) => {
                     if let Ok(gps_data) = GpsData::try_from(&data) {
                         println!("GPS Data: {gps_data:?}");
+                        // We've already got our object, there's no point in trying another in this iteration
+                        continue;
+                    }
+                    if let Ok(on_ground) = OnGround::try_from(&data) {
+                        println!("On Ground data: {on_ground:?}");
+                        // We've already got our object, there's no point in trying another in this iteration
+                        continue;
                     }
                 }
                 _ => (),

@@ -18,3 +18,10 @@ num_enum = "0.5"
 tracing = "0.1"
 thiserror = "1.0"
 simconnect-sdk-derive = { path = "../simconnect-sdk-derive", optional = true }
+
+# docs.rs-specific configuration
+[package.metadata.docs.rs]
+# document all features
+all-features = true
+# defines the configuration attribute `docsrs`
+rustdoc-args = ["--cfg", "docsrs"]

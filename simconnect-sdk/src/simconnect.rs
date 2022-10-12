@@ -7,13 +7,65 @@ use crate::{
 };
 
 /// SimConnect SDK Client.
+///
+/// # Example
+///
+/// ```no_run
+/// use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
+///
+/// /// A data structure that will be used to receive data from SimConnect.
+/// #[derive(Debug, Clone, SimConnectObject)]
+/// #[simconnect(period = "second")]
+/// struct GpsData {
+///     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
+///     lat: f64,
+///     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
+///     lon: f64,
+///     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
+///     alt: f64,
+/// }
+///
+/// fn main() -> Result<(), Box<dyn std::error::Error>> {
+///     let client = SimConnect::new("Simple Program");
+///
+///     match client {
+///         Ok(mut client) => loop {
+///             let notification = client.get_next_dispatch()?;
+///
+///             match notification {
+///                 Some(Notification::Open) => {
+///                     println!("Open");
+///
+///                     // The struct must be registered after the connection is successfully open
+///                     client.register_object::<GpsData>()?;
+///                 }
+///                 Some(Notification::Data(data)) => {
+///                     if let Ok(gps_data) = GpsData::try_from(&data) {
+///                         println!("GPS Data: {gps_data:?}");
+///                     }
+///                 }
+///                 _ => (),
+///             }
+///
+///             // sleep for about a frame to reduce CPU usage
+///             std::thread::sleep(std::time::Duration::from_millis(16));
+///         },
+///         Err(e) => {
+///             println!("Error: {e:?}")
+///         }
+///     }
+///
+///     Ok(())
+/// }
+/// ```
 #[derive(Debug)]
 pub struct SimConnect {
-    pub handle: std::ptr::NonNull<c_void>,
-    pub registered_objects: Vec<String>,
+    handle: std::ptr::NonNull<c_void>,
+    registered_objects: Vec<String>,
 }
 
 impl SimConnect {
+    /// Create a new SimConnect SDK client.
     #[tracing::instrument(name = "SimConnect::new")]
     pub fn new(name: &str) -> Result<Self, SimConnectError> {
         let mut handle = std::ptr::null_mut();
@@ -182,6 +234,9 @@ impl SimConnect {
         Ok(())
     }
 
+    /// Receive the next SimConnect message.
+    /// This is a non-blocking function. If there are no messages to receive, it will return None immediately.
+    /// When called in a loop, it is recommended to use a short sleep time.
     pub fn get_next_dispatch(&self) -> Result<Option<Notification>, SimConnectError> {
         let mut data_buf: *mut bindings::SIMCONNECT_RECV = std::ptr::null_mut();
         let mut size_buf: bindings::DWORD = 32;
