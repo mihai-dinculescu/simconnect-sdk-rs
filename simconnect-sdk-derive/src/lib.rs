@@ -117,10 +117,10 @@ pub fn derive(input: TokenStream) -> TokenStream {
                 Ok(())
             }
         }
-        impl TryFrom<&simconnect_sdk::NotificationData> for #name {
+        impl TryFrom<&simconnect_sdk::Object> for #name {
             type Error = simconnect_sdk::SimConnectError;
 
-            fn try_from(value: &simconnect_sdk::NotificationData) -> Result<Self, Self::Error> {
+            fn try_from(value: &simconnect_sdk::Object) -> Result<Self, Self::Error> {
                 value.try_transmute::<#name>()
             }
         }

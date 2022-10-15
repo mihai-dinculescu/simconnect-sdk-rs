@@ -1,8 +1,6 @@
 #![allow(dead_code)]
 
 use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
-use tracing::{error, info};
-use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 /// A data structure that will be used to receive data from SimConnect.
 #[derive(Debug, Clone, SimConnectObject)]
@@ -16,9 +14,15 @@ struct GpsData {
     alt: f64,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    setup_logging()?;
+/// A second data structure that will be used to receive data from SimConnect.
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", condition = "changed")]
+pub struct OnGround {
+    #[simconnect(name = "SIM ON GROUND", unit = "bool")]
+    sim_on_ground: bool,
+}
 
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = SimConnect::new("Simple Program");
 
     match client {
@@ -27,14 +31,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             match notification {
                 Some(Notification::Open) => {
-                    info!("Open");
+                    println!("Open");
 
-                    // The struct must be registered after the connection is successfully open
+                    // After the connection is successfully open, we register the structs
                     client.register_object::<GpsData>()?;
+                    client.register_object::<OnGround>()?;
                 }
-                Some(Notification::Data(data)) => {
+                Some(Notification::Object(data)) => {
                     if let Ok(gps_data) = GpsData::try_from(&data) {
-                        info!("GPS Data: {gps_data:?}");
+                        println!("{gps_data:?}");
+                        // We've already got our data, there's no point in trying another in this iteration
+                        continue;
+                    }
+                    if let Ok(on_ground) = OnGround::try_from(&data) {
+                        println!("{on_ground:?}");
+                        // We've already got our data, there's no point in trying another in this iteration
+                        continue;
                     }
                 }
                 _ => (),
@@ -44,23 +56,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::thread::sleep(std::time::Duration::from_millis(16));
         },
         Err(e) => {
-            error!("{e:?}")
+            println!("Error: {e:?}")
         }
     }
-
-    Ok(())
-}
-
-fn setup_logging() -> Result<(), Box<dyn std::error::Error>> {
-    let filter_layer = EnvFilter::try_from_default_env().or_else(|_| EnvFilter::try_new("info"))?;
-    let fmt_layer = fmt::layer()
-        .with_target(false)
-        .with_span_events(fmt::format::FmtSpan::FULL);
-
-    tracing_subscriber::registry()
-        .with(filter_layer)
-        .with(fmt_layer)
-        .init();
 
     Ok(())
 }

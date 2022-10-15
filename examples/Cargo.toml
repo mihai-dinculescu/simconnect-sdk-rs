@@ -8,20 +8,24 @@ license = "MIT"
 publish = false
 
 [[bin]]
-name = "basic"
-path = "src/basic.rs"
+name = "data"
+path = "src/data.rs"
 
 [[bin]]
-name = "basic_with_tracing"
-path = "src/basic_with_tracing.rs"
+name = "data_with_tracing"
+path = "src/data_with_tracing.rs"
 
 [[bin]]
-name = "basic_without_macro"
-path = "src/basic_without_macro.rs"
+name = "data_without_macro"
+path = "src/data_without_macro.rs"
 
 [[bin]]
-name = "multiple_objects"
-path = "src/multiple_objects.rs"
+name = "data_multiple_objects"
+path = "src/data_multiple_objects.rs"
+
+[[bin]]
+name = "facilities"
+path = "src/facilities.rs"
 
 [dependencies]
 tracing = "0.1"

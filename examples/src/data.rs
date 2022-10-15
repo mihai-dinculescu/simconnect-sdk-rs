@@ -25,12 +25,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Some(Notification::Open) => {
                     println!("Open");
 
-                    // The struct must be registered after the connection is successfully open
+                    // After the connection is successfully open, we register the struct
                     client.register_object::<GpsData>()?;
                 }
-                Some(Notification::Data(data)) => {
+                Some(Notification::Object(data)) => {
                     if let Ok(gps_data) = GpsData::try_from(&data) {
-                        println!("GPS Data: {gps_data:?}");
+                        println!("{gps_data:?}");
                     }
                 }
                 _ => (),
