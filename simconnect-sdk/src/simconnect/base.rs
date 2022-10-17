@@ -1,9 +1,8 @@
-use std::ffi::c_void;
+use std::{collections::HashMap, ffi::c_void};
 
 use crate::{
-    as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, Airport, Condition,
-    DataType, Event, FacilityType, Notification, NotificationGroup, Object, Period,
-    SimConnectError, SimConnectObjectExt, Waypoint, NDB, VOR,
+    as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, Airport, Event,
+    Notification, Object, SimConnectError, Waypoint, NDB, VOR,
 };
 
 /// SimConnect SDK Client.
@@ -60,8 +59,9 @@ use crate::{
 /// ```
 #[derive(Debug)]
 pub struct SimConnect {
-    handle: std::ptr::NonNull<c_void>,
-    registered_objects: Vec<String>,
+    pub(super) handle: std::ptr::NonNull<c_void>,
+    pub(super) next_request_id: u32,
+    pub(super) registered_objects: HashMap<String, u32>,
 }
 
 impl SimConnect {
@@ -87,175 +87,9 @@ impl SimConnect {
                     "SimConnect_Open returned null pointer on success".to_string(),
                 )
             })?,
-            registered_objects: Vec::new(),
+            next_request_id: 0,
+            registered_objects: HashMap::new(),
         })
-    }
-
-    // Register an object with SimConnect by assigning it an unique interval `request_id` and then calling the [`crate::SimConnectObjectExt::register`] method on the struct.
-    #[tracing::instrument(name = "SimConnect::register_object")]
-    pub fn register_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
-        let type_name: String = std::any::type_name::<T>().into();
-
-        let id = self.register_request_id(type_name)?;
-
-        T::register(self, id)?;
-
-        Ok(id)
-    }
-
-    /// Associates a client defined event with a Microsoft Flight Simulator event name.
-    ///
-    /// WIP
-    #[tracing::instrument(name = "SimConnect::register_event")]
-    pub fn register_event(
-        &self,
-        event: Event,
-        notification_group: NotificationGroup,
-    ) -> Result<(), SimConnectError> {
-        success!(unsafe {
-            bindings::SimConnect_MapClientEventToSimEvent(
-                self.handle.as_ptr(),
-                event as u32,
-                event.into_c_char(),
-            )
-        });
-
-        success!(unsafe {
-            bindings::SimConnect_AddClientEventToNotificationGroup(
-                self.handle.as_ptr(),
-                notification_group as u32,
-                event as u32,
-                0,
-            )
-        });
-
-        success!(unsafe {
-            bindings::SimConnect_SetNotificationGroupPriority(
-                self.handle.as_ptr(),
-                notification_group as u32,
-                1,
-            )
-        });
-
-        Ok(())
-    }
-
-    /// Add a Microsoft Flight Simulator simulation variable name to a client defined object definition.
-    ///
-    /// # Remarks
-    /// The [`crate::SimConnectObject`] macro will automatically call this method for you.
-    #[tracing::instrument(name = "SimConnect::add_to_data_definition")]
-    pub fn add_to_data_definition(
-        &self,
-        request_id: u32,
-        datum_name: &str,
-        units_name: &str,
-        data_type: DataType,
-    ) -> Result<(), SimConnectError> {
-        let c_type = match data_type {
-            DataType::Float64 => bindings::SIMCONNECT_DATATYPE_SIMCONNECT_DATATYPE_FLOAT64,
-            DataType::Bool => bindings::SIMCONNECT_DATATYPE_SIMCONNECT_DATATYPE_INT32,
-        };
-
-        unsafe {
-            success!(bindings::SimConnect_AddToDataDefinition(
-                self.handle.as_ptr(),
-                request_id,
-                as_c_string!(datum_name),
-                as_c_string!(units_name),
-                c_type,
-                0.0,
-                u32::MAX,
-            ));
-        }
-
-        Ok(())
-    }
-
-    /// Request when the SimConnect client is to receive data values for a specific object.
-    ///
-    /// # Remarks
-    /// The [`crate::SimConnectObject`] macro will automatically call this method for you.
-    ///
-    /// It is possible to change the period of a request, by re-sending the [`crate::SimConnect::request_data_on_sim_object`] call with the same `request_id` parameters, but with a new `period`.
-    /// The one exception to this is the new period cannot be [`crate::Period::Once`], in this case a request with a new `request_id` should be sent.
-    #[tracing::instrument(name = "SimConnect::request_data_on_sim_object")]
-    pub fn request_data_on_sim_object(
-        &self,
-        request_id: u32,
-        period: Period,
-        condition: Condition,
-        interval: u32,
-    ) -> Result<(), SimConnectError> {
-        unsafe {
-            success!(bindings::SimConnect_RequestDataOnSimObject(
-                self.handle.as_ptr(),
-                request_id,
-                request_id,
-                request_id,
-                period.into(),
-                condition.into(),
-                0,
-                interval,
-                0,
-            ));
-        }
-
-        Ok(())
-    }
-
-    /// Request notifications when a facility of a certain type is added to the facilities cache.
-    ///
-    /// When this function is first called, a full list from the cache will be sent, thereafter just the additions will be transmitted.
-    /// No notification is given when a facility is removed from the cache.
-    /// To terminate these notifications use the [`crate::SimConnect::unsubscribe_to_facilities`] function.
-    ///
-    /// # Remarks
-    /// The simulation keeps a facilities cache of all the airports, waypoints, NDB and VOR stations within a certain radius of the user aircraft.
-    /// This radius varies depending on where the aircraft is in the world, but is at least large enough to encompass the whole of the reality bubble for airports and waypoints, and can be over 200 miles for VOR and NDB stations.
-    /// As the user aircraft moves facilities will be added to, and removed from, the cache. However, in the interests pf performance, hysteresis is built into the system.
-    #[tracing::instrument(name = "SimConnect::subscribe_to_facilities")]
-    pub fn subscribe_to_facilities(
-        &mut self,
-        facility_type: FacilityType,
-    ) -> Result<(), SimConnectError> {
-        let type_name = facility_type.to_type_name();
-        let request_id = self.register_request_id(type_name)?;
-
-        unsafe {
-            success!(bindings::SimConnect_SubscribeToFacilities(
-                self.handle.as_ptr(),
-                facility_type.into(),
-                request_id,
-            ));
-        }
-
-        Ok(())
-    }
-
-    /// Request a list of all the facilities of a given type currently held in the facilities cache.
-    ///
-    /// # Remarks
-    /// The simulation keeps a facilities cache of all the airports, waypoints, NDB and VOR stations within a certain radius of the user aircraft.
-    /// This radius varies depending on where the aircraft is in the world, but is at least large enough to encompass the whole of the reality bubble for airports and waypoints, and can be over 200 miles for VOR and NDB stations.
-    /// As the user aircraft moves facilities will be added to, and removed from, the cache. However, in the interests pf performance, hysteresis is built into the system.
-    #[tracing::instrument(name = "SimConnect::request_facilities_list")]
-    pub fn request_facilities_list(
-        &mut self,
-        facility_type: FacilityType,
-    ) -> Result<(), SimConnectError> {
-        let type_name = facility_type.to_type_name();
-        let request_id = self.register_request_id(type_name)?;
-
-        unsafe {
-            success!(bindings::SimConnect_RequestFacilitiesList(
-                self.handle.as_ptr(),
-                facility_type.into(),
-                request_id,
-            ));
-        }
-
-        Ok(())
     }
 
     /// Receive the next SimConnect message.
@@ -295,12 +129,12 @@ impl SimConnect {
                     )
                 };
 
-                let object_type = self.registered_objects.get(event.dwDefineID as usize);
+                let type_name = self.get_type_name_by_request_id(event.dwDefineID);
 
-                match object_type {
-                    Some(object_type) => {
+                match type_name {
+                    Some(type_name) => {
                         let data = Object {
-                            type_name: object_type.clone(),
+                            type_name,
                             data_addr: std::ptr::addr_of!(event.dwData),
                         };
 
@@ -464,26 +298,41 @@ impl SimConnect {
         Ok(result)
     }
 
-    /// Register a request id in the internal state so that the user doesn't have to manually manage requests ids.
-    #[tracing::instrument(name = "SimConnect::register_request_id")]
-    fn register_request_id(&mut self, type_name: String) -> Result<u32, SimConnectError> {
-        if self.registered_objects.contains(&type_name) {
+    /// Register a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
+    #[tracing::instrument(name = "SimConnect::new_request_id")]
+    pub(super) fn new_request_id(&mut self, type_name: String) -> Result<u32, SimConnectError> {
+        if self.registered_objects.contains_key(&type_name) {
             return Err(SimConnectError::ObjectAlreadyRegistered(type_name));
         }
 
-        self.registered_objects.push(type_name.clone());
+        let mut request_id = self.next_request_id;
+        self.next_request_id += 1;
 
-        // using the index for now because we don't unregister objects, yet
-        let id = self
-            .registered_objects
+        // when `next_request_id` overflows some ids might still be in use
+        // so we need to find the next available one
+        while self.registered_objects.values().any(|id| *id == request_id) {
+            request_id = self.next_request_id;
+            self.next_request_id += 1;
+        }
+
+        self.registered_objects.insert(type_name, request_id);
+
+        Ok(request_id)
+    }
+
+    /// Unregister a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
+    #[tracing::instrument(name = "SimConnect::unregister_request_id_by_type_name")]
+    pub(super) fn unregister_request_id_by_type_name(&mut self, type_name: String) {
+        self.registered_objects.remove(&type_name);
+    }
+
+    /// Get the Type Name of a Request ID.
+    #[tracing::instrument(name = "SimConnect::get_request_id_by_type_name")]
+    pub(super) fn get_type_name_by_request_id(&self, request_id: u32) -> Option<String> {
+        self.registered_objects
             .iter()
-            .position(|p| p == &type_name)
-            .ok_or_else(|| {
-                SimConnectError::UnexpectedError("failed to find registered event".to_string())
-            })?;
-        let id = u32::try_from(id)?;
-
-        Ok(id)
+            .find(|(_, v)| **v == request_id)
+            .map(|(k, _)| k.clone())
     }
 }
 

@@ -24,6 +24,7 @@ fn main() {
         .allowlist_function("SimConnect_AddToDataDefinition")
         .allowlist_function("SimConnect_RequestDataOnSimObject")
         .allowlist_function("SimConnect_SubscribeToFacilities")
+        .allowlist_function("SimConnect_UnsubscribeToFacilities")
         .allowlist_function("SimConnect_RequestFacilitiesList")
         .allowlist_type("SIMCONNECT_RECV")
         .allowlist_type("SIMCONNECT_RECV_ID")

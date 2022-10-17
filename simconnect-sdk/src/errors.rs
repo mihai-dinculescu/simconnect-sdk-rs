@@ -12,6 +12,9 @@ pub enum SimConnectError {
     /// Object already registered with the client instance.
     #[error("Object `{0}` has already been registered")]
     ObjectAlreadyRegistered(String),
+    /// Object already registered with the client instance.
+    #[error("Object `{0}` has not been registered")]
+    ObjectNotRegistered(String),
     /// Object mismatch.
     #[error("Tried to convert object of type {actual} to {expected}")]
     ObjectMismatch { actual: String, expected: String },

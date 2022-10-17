@@ -11,8 +11,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Some(Notification::Open) => {
                     println!("Open");
 
-                    // After the connection is successfully open, we subscribe to all facility types that we are interested in
-                    client.subscribe_to_facilities(FacilityType::Airport)?;
+                    // After the connection is successfully open
+
+                    // We request the existing list of airports in the facilities cache
+                    client.request_facilities_list(FacilityType::Airport)?;
+
+                    // We subscribe to the current list and future additions of waypoints, NDBs and VORs
                     client.subscribe_to_facilities(FacilityType::Waypoint)?;
                     client.subscribe_to_facilities(FacilityType::NDB)?;
                     client.subscribe_to_facilities(FacilityType::VOR)?;
@@ -22,6 +26,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         // The returned list is quite large, so we look for a particular record
                         if record.icao == "EGSC" {
                             println!("{record:?}");
+                            // we've got the entry we're interesting in - we can unsubscribe now
+                            client.unsubscribe_to_facilities(FacilityType::Airport)?;
                         }
                     }
                 }
@@ -30,6 +36,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         // The returned list is quite large, so we look for a particular record
                         if record.icao == "BRAIN" {
                             println!("{record:?}");
+                            // we've got the entry we're interesting in - we can unsubscribe now
+                            client.unsubscribe_to_facilities(FacilityType::Waypoint)?;
                         }
                     }
                 }
@@ -38,6 +46,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         // The returned list is quite large, so we look for a particular record
                         if record.icao == "CAM" {
                             println!("{record:?}");
+                            // we've got the entry we're interesting in - we can unsubscribe now
+                            client.unsubscribe_to_facilities(FacilityType::NDB)?;
                         }
                     }
                 }
@@ -46,6 +56,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         // The returned list is quite large, so we look for a particular record
                         if record.icao == "LON" {
                             println!("{record:?}");
+                            // we've got the entry we're interesting in - we can unsubscribe now
+                            client.unsubscribe_to_facilities(FacilityType::VOR)?;
                         }
                     }
                 }
