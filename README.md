@@ -1,5 +1,7 @@
 # SimConnect SDK in Rust
 
+[![CI][ci_badge]][ci]
+
 ## Usage
 
 ```toml
@@ -71,4 +73,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 See [more examples][examples].
 
+[ci_badge]: https://github.com/mihai-dinculescu/simconnect-sdk/workflows/CI/badge.svg?branch=main
+[ci]: https://github.com/mihai-dinculescu/simconnect-sdk/actions
 [examples]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/main/examples

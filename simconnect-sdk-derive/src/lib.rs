@@ -70,8 +70,9 @@ const SUPPORTED_FIELD_TYPES: [&str; 2] = ["f64", "bool"];
 /// * `unit` - Required. The unit of the field.
 ///
 /// # Example
+///
 /// ```rust
-/// use simconnect_sdk::SimConnectObject;
+/// # use simconnect_sdk_derive::SimConnectObject;
 ///
 /// #[derive(Debug, Clone, SimConnectObject)]
 /// #[simconnect(period = "second")]

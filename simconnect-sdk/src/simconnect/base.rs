@@ -9,7 +9,7 @@ use crate::{
 ///
 /// # Example
 ///
-/// ```no_run
+/// ```rust,no_run
 /// use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
 ///
 /// /// A data structure that will be used to receive data from SimConnect.
