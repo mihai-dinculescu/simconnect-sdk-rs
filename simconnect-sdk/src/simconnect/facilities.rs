@@ -79,7 +79,7 @@ impl SimConnect {
             ));
         }
 
-        self.unregister_request_id_by_type_name(type_name);
+        self.unregister_request_id_by_type_name(&type_name);
 
         Ok(())
     }

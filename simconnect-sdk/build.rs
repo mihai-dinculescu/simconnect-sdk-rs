@@ -23,6 +23,7 @@ fn main() {
         .allowlist_function("SimConnect_GetNextDispatch")
         .allowlist_function("SimConnect_AddToDataDefinition")
         .allowlist_function("SimConnect_RequestDataOnSimObject")
+        .allowlist_function("SimConnect_ClearDataDefinition")
         .allowlist_function("SimConnect_SubscribeToFacilities")
         .allowlist_function("SimConnect_UnsubscribeToFacilities")
         .allowlist_function("SimConnect_RequestFacilitiesList")

@@ -16,6 +16,27 @@ impl SimConnect {
         Ok(id)
     }
 
+    // Unregister an object with SimConnect.
+    #[tracing::instrument(name = "SimConnect::register_object")]
+    pub fn unregister_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
+        let type_name: String = std::any::type_name::<T>().into();
+
+        let request_id = self
+            .registered_objects
+            .get(&type_name)
+            .ok_or_else(|| SimConnectError::ObjectNotRegistered(type_name.clone()))?;
+
+        unsafe {
+            success!(bindings::SimConnect_ClearDataDefinition(
+                self.handle.as_ptr(),
+                *request_id,
+            ));
+        }
+
+        self.unregister_request_id_by_type_name(&type_name)
+            .ok_or(SimConnectError::ObjectNotRegistered(type_name))
+    }
+
     /// Add a Microsoft Flight Simulator simulation variable name to a client defined object definition.
     ///
     /// # Remarks

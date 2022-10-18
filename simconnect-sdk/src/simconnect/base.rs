@@ -28,27 +28,40 @@ use crate::{
 ///     let client = SimConnect::new("Simple Program");
 ///
 ///     match client {
-///         Ok(mut client) => loop {
-///             let notification = client.get_next_dispatch()?;
+///         Ok(mut client) => {
+///             let mut notifications_received = 0;
 ///
-///             match notification {
-///                 Some(Notification::Open) => {
-///                     println!("Open");
+///             loop {
+///                 let notification = client.get_next_dispatch()?;
 ///
-///                     // After the connection is successfully open, we register the struct
-///                     client.register_object::<GpsData>()?;
-///                 }
-///                 Some(Notification::Object(data)) => {
-///                     if let Ok(gps_data) = GpsData::try_from(&data) {
-///                         println!("{gps_data:?}");
+///                 match notification {
+///                     Some(Notification::Open) => {
+///                         println!("Connection opened.");
+///
+///                         // After the connection is successfully open, we register the struct
+///                         client.register_object::<GpsData>()?;
 ///                     }
-///                 }
-///                 _ => (),
-///             }
+///                     Some(Notification::Object(data)) => {
+///                         if let Ok(gps_data) = GpsData::try_from(&data) {
+///                             println!("{gps_data:?}");
 ///
-///             // sleep for about a frame to reduce CPU usage
-///             std::thread::sleep(std::time::Duration::from_millis(16));
-///         },
+///                             notifications_received += 1;
+///
+///                             // After we have received 10 notifications, we unregister the struct
+///                             if notifications_received > 10 {
+///                                 client.unregister_object::<GpsData>()?;
+///                                 println!("Subscription stopped.");
+///                                 break;
+///                             }
+///                         }
+///                     }
+///                     _ => (),
+///                 }
+///
+///                 // sleep for about a frame to reduce CPU usage
+///                 std::thread::sleep(std::time::Duration::from_millis(16));
+///             }
+///         }
 ///         Err(e) => {
 ///             println!("Error: {e:?}")
 ///         }
@@ -322,12 +335,12 @@ impl SimConnect {
 
     /// Unregister a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
     #[tracing::instrument(name = "SimConnect::unregister_request_id_by_type_name")]
-    pub(super) fn unregister_request_id_by_type_name(&mut self, type_name: String) {
-        self.registered_objects.remove(&type_name);
+    pub(super) fn unregister_request_id_by_type_name(&mut self, type_name: &str) -> Option<u32> {
+        self.registered_objects.remove(type_name)
     }
 
     /// Get the Type Name of a Request ID.
-    #[tracing::instrument(name = "SimConnect::get_request_id_by_type_name")]
+    #[tracing::instrument(name = "SimConnect::get_type_name_by_request_id")]
     pub(super) fn get_type_name_by_request_id(&self, request_id: u32) -> Option<String> {
         self.registered_objects
             .iter()

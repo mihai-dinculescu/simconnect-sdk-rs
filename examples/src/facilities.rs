@@ -9,7 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             match notification {
                 Some(Notification::Open) => {
-                    println!("Open");
+                    println!("Connection opened.");
 
                     // After the connection is successfully open
 
