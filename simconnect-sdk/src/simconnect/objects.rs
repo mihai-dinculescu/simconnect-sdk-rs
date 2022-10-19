@@ -17,7 +17,7 @@ impl SimConnect {
     }
 
     // Unregister an object with SimConnect.
-    #[tracing::instrument(name = "SimConnect::register_object")]
+    #[tracing::instrument(name = "SimConnect::unregister_object")]
     pub fn unregister_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
         let type_name: String = std::any::type_name::<T>().into();
 

@@ -31,6 +31,10 @@ pub struct Object {
 }
 
 impl Object {
+    /// Try and transmute this SimConnect object as a `T` struct.
+    ///
+    /// # Errors
+    /// - [`crate::SimConnectError::ObjectMismatch`] -- The type of this SimConnect object is different from `T`.
     pub fn try_transmute<T: SimConnectObjectExt>(&self) -> Result<T, SimConnectError> {
         let type_name: String = std::any::type_name::<T>().into();
 

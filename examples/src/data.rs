@@ -1,10 +1,9 @@
-#![allow(dead_code)]
-
 use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
 
 /// A data structure that will be used to receive data from SimConnect.
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second")]
+#[allow(dead_code)]
 struct GpsData {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     lat: f64,
@@ -15,7 +14,7 @@ struct GpsData {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = SimConnect::new("Simple Program");
+    let client = SimConnect::new("Receiving data example");
 
     match client {
         Ok(mut client) => {

@@ -1,7 +1,7 @@
 use simconnect_sdk::{FacilityType, Notification, SimConnect};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = SimConnect::new("Simple Program");
+    let client = SimConnect::new("Facilities example");
 
     match client {
         Ok(mut client) => loop {
