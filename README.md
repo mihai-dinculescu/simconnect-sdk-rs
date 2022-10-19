@@ -24,7 +24,7 @@ struct GpsData {
     lat: f64,
     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
     lon: f64,
-    #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
+    #[simconnect(name = "PLANE ALTITUDE", unit = "feet")]
     alt: f64,
 }
 

@@ -16,7 +16,7 @@ impl SimConnectObjectExt for GpsData {
     fn register(client: &mut SimConnect, id: u32) -> Result<(), SimConnectError> {
         client.add_to_data_definition(id, "PLANE LATITUDE", "degrees", DataType::Float64)?;
         client.add_to_data_definition(id, "PLANE LONGITUDE", "degrees", DataType::Float64)?;
-        client.add_to_data_definition(id, "PLANE ALTITUDE", "meters", DataType::Float64)?;
+        client.add_to_data_definition(id, "PLANE ALTITUDE", "feet", DataType::Float64)?;
 
         client.request_data_on_sim_object(id, Period::Second, Condition::None, 0)?;
 
