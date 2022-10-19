@@ -6,7 +6,14 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
+#[derive(Debug, PartialEq, Eq)]
+enum FieldType {
+    Str,
+    Int,
+}
+
 struct FieldInfo {
+    field_type: FieldType,
     required: bool,
     accepted_values: Vec<String>,
 }
@@ -17,6 +24,7 @@ static ALLOWED_CLASS_ATTRIBUTES: Lazy<HashMap<String, FieldInfo>> = Lazy::new(||
     map.insert(
         "period".to_string(),
         FieldInfo {
+            field_type: FieldType::Str,
             required: true,
             accepted_values: vec![
                 "once".to_string(),
@@ -29,8 +37,17 @@ static ALLOWED_CLASS_ATTRIBUTES: Lazy<HashMap<String, FieldInfo>> = Lazy::new(||
     map.insert(
         "condition".to_string(),
         FieldInfo {
+            field_type: FieldType::Str,
             required: false,
             accepted_values: vec!["none".to_string(), "changed".to_string()],
+        },
+    );
+    map.insert(
+        "interval".to_string(),
+        FieldInfo {
+            field_type: FieldType::Int,
+            required: false,
+            accepted_values: vec![],
         },
     );
 
@@ -43,6 +60,7 @@ static ALLOWED_FIELD_ATTRIBUTES: Lazy<HashMap<String, FieldInfo>> = Lazy::new(||
     map.insert(
         "name".to_string(),
         FieldInfo {
+            field_type: FieldType::Str,
             required: true,
             accepted_values: vec![],
         },
@@ -50,6 +68,7 @@ static ALLOWED_FIELD_ATTRIBUTES: Lazy<HashMap<String, FieldInfo>> = Lazy::new(||
     map.insert(
         "unit".to_string(),
         FieldInfo {
+            field_type: FieldType::Str,
             required: true,
             accepted_values: vec![],
         },
@@ -63,7 +82,8 @@ const SUPPORTED_FIELD_TYPES: [&str; 2] = ["f64", "bool"];
 ///
 /// # Struct Arguments
 /// * `period` - Required. One of `once`, `visual-frame`, `sim-frame`, `second`.
-/// * `condition` - Optional. The condition of the data. Must be either `none` or `changed`. Defaults to `none`.
+/// * `condition` - Optional. Defaults to `none`. The condition of the data. Must be either `none` or `changed`. `changed` = Data will only be sent to the client when one or more values have changed. All the variables in a data definition will be returned if just one of the values changes.
+/// * `interval` - Optional. Defaults to `0`. The number of period events that should elapse between transmissions of the data. `0` means the data is transmitted every Period, `1` means that the data is transmitted every other Period, etc.
 ///
 /// # Field Arguments
 /// * `name` - Required. The name of the field. One from <http://www.prepar3d.com/SDKv3/LearningCenter/utilities/variables/simulation_variables.html#Simulation%20Variables>.
@@ -144,8 +164,8 @@ fn parse_field(f: &syn::Field) -> proc_macro2::TokenStream {
             match properties {
                 Ok(properties) => {
                     let error_message_supported_types = &format!(
-                        "Field type must be one of ['{}']",
-                        SUPPORTED_FIELD_TYPES.join("', '")
+                        r#"Field type must be one of ["{}"]"#,
+                        SUPPORTED_FIELD_TYPES.join(r#"", ""#)
                     );
 
                     match ty {
@@ -182,7 +202,7 @@ fn parse_field(f: &syn::Field) -> proc_macro2::TokenStream {
 
 fn request_data(ast: &DeriveInput) -> proc_macro2::TokenStream {
     let attr = get_attribute(&ast.attrs);
-    let error_message = "expected attribute `#[simconnect(period = \"...\", condition = \"...\")]`";
+    let error_message = "expected attribute `#[simconnect(period = \"...\", condition = \"...\", interval = ...)]`. `condition` and `interval` are optional.";
 
     match attr {
         Some(attr) => {
@@ -227,8 +247,13 @@ fn request_data(ast: &DeriveInput) -> proc_macro2::TokenStream {
                         }
                     };
 
+                    let interval = match properties.get("interval") {
+                        Some(i) => i.parse::<u32>().unwrap_or_default(),
+                        None => 0,
+                    };
+
                     quote! {
-                        client.request_data_on_sim_object(id, #period, #condition, 0)?;
+                        client.request_data_on_sim_object(id, #period, #condition, #interval)?;
                     }
                 }
                 Err(e) => e,
@@ -270,8 +295,10 @@ fn extract_attribute_string_properties(
                                         }
 
                                         match &nv.lit {
-                                            syn::Lit::Str(s) => {
-                                                let value = s.value();
+                                            syn::Lit::Str(lit)
+                                                if property.field_type == FieldType::Str =>
+                                            {
+                                                let value = lit.value();
 
                                                 if !property.accepted_values.is_empty()
                                                     && !property.accepted_values.contains(&value)
@@ -280,8 +307,32 @@ fn extract_attribute_string_properties(
                                                     return Err(mk_err(
                                                         nv,
                                                         &format!(
-                                                            "`{ident_string}` must be one of ['{}']",
-                                                            property.accepted_values.join("', '")
+                                                            r#"`{ident_string}` must be one of ["{}"]"#,
+                                                            property
+                                                                .accepted_values
+                                                                .join(r#"", ""#)
+                                                        ),
+                                                    ));
+                                                }
+
+                                                results.insert(ident_string, value);
+                                            }
+                                            syn::Lit::Int(lit)
+                                                if property.field_type == FieldType::Int =>
+                                            {
+                                                let value = lit.to_string();
+
+                                                if !property.accepted_values.is_empty()
+                                                    && !property.accepted_values.contains(&value)
+                                                {
+                                                    // found an invalid value
+                                                    return Err(mk_err(
+                                                        nv,
+                                                        &format!(
+                                                            r#"`{ident_string}` must be one of ["{}""]"#,
+                                                            property
+                                                                .accepted_values
+                                                                .join(r#"", ""#)
                                                         ),
                                                     ));
                                                 }
@@ -291,7 +342,10 @@ fn extract_attribute_string_properties(
                                             lit => {
                                                 return Err(syn::Error::new_spanned(
                                                     nv,
-                                                    format!("expected string, found {lit:?}"),
+                                                    format!(
+                                                        "Expected {:?}, found {:?}",
+                                                        property.field_type, lit
+                                                    ),
                                                 )
                                                 .to_compile_error())
                                             }

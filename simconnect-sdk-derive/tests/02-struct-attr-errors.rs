@@ -21,19 +21,27 @@ struct GpsData4 {}
 struct GpsData5 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
-#[simconnect(condition = "none", condition = "none")]
+#[simconnect(period = "second", condition = "none", condition = "none")]
 struct GpsData6 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
-#[simconnect(period = "second", condition = "none", test = "test")]
+#[simconnect(period = "second", interval = 0, interval = 0)]
 struct GpsData7 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
-#[simconnect(periodX = "second", condition = "none")]
+#[simconnect(period = "second", test = "test")]
 struct GpsData8 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
-#[simconnect(period = "second", conditionX = "none")]
+#[simconnect(periodX = "second", condition = "none")]
 struct GpsData9 {}
+
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", conditionX = "none")]
+struct GpsData10 {}
+
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", intervalX = 0)]
+struct GpsData11 {}
 
 fn main() {}

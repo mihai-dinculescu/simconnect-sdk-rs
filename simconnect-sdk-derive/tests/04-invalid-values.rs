@@ -18,8 +18,16 @@ struct GpsData3 {}
 struct GpsData4 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", interval = "X")]
+struct GpsData5 {}
+
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", interval = 0.0)]
+struct GpsData6 {}
+
+#[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData5 {
+struct GpsData7 {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     pub lat: String,
 }

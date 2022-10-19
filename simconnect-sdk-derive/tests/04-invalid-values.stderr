@@ -1,30 +1,42 @@
-error: expected string, found Int(LitInt { token: 123 })
+error: Expected Str, found Int(LitInt { token: 123 })
  --> tests/04-invalid-values.rs:5:14
   |
 5 | #[simconnect(period = 123, condition = "none")]
   |              ^^^^^^^^^^^^
 
-error: expected string, found Int(LitInt { token: 123 })
+error: Expected Str, found Int(LitInt { token: 123 })
  --> tests/04-invalid-values.rs:9:33
   |
 9 | #[simconnect(period = "second", condition = 123)]
   |                                 ^^^^^^^^^^^^^^^
 
-error: `period` must be one of ['once', 'visual-frame', 'sim-frame', 'second']
+error: `period` must be one of ["once", "visual-frame", "sim-frame", "second"]
   --> tests/04-invalid-values.rs:13:14
    |
 13 | #[simconnect(period = "X")]
    |              ^^^^^^^^^^^^
 
-error: `condition` must be one of ['none', 'changed']
+error: `condition` must be one of ["none", "changed"]
   --> tests/04-invalid-values.rs:17:33
    |
 17 | #[simconnect(period = "second", condition = "X")]
    |                                 ^^^^^^^^^^^^^^^
 
-error: Field type must be one of ['f64', 'bool']
-  --> tests/04-invalid-values.rs:23:5
+error: Expected Int, found Str(LitStr { token: "X" })
+  --> tests/04-invalid-values.rs:21:33
    |
-23 | /     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
-24 | |     pub lat: String,
+21 | #[simconnect(period = "second", interval = "X")]
+   |                                 ^^^^^^^^^^^^^^
+
+error: Expected Int, found Float(LitFloat { token: 0.0 })
+  --> tests/04-invalid-values.rs:25:33
+   |
+25 | #[simconnect(period = "second", interval = 0.0)]
+   |                                 ^^^^^^^^^^^^^^
+
+error: Field type must be one of ["f64", "bool"]
+  --> tests/04-invalid-values.rs:31:5
+   |
+31 | /     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
+32 | |     pub lat: String,
    | |___________________^

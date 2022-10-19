@@ -28,4 +28,13 @@ struct GpsData3 {
     pub lon: f64,
 }
 
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "visual-frame", condition = "changed", interval = 0)]
+struct GpsData4 {
+    #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
+    pub lat: f64,
+    #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
+    pub lon: f64,
+}
+
 fn main() {}

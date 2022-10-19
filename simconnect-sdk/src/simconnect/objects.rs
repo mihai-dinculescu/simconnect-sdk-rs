@@ -40,7 +40,7 @@ impl SimConnect {
     /// Add a Microsoft Flight Simulator simulation variable name to a client defined object definition.
     ///
     /// # Remarks
-    /// The [`crate::SimConnectObject`] macro will automatically call this method for you.
+    /// The [`crate::SimConnectObject`] macro will automatically call this method for the struct.
     #[tracing::instrument(name = "SimConnect::add_to_data_definition")]
     pub fn add_to_data_definition(
         &self,
@@ -71,11 +71,13 @@ impl SimConnect {
 
     /// Request when the SimConnect client is to receive data values for a specific object.
     ///
-    /// # Remarks
-    /// The [`crate::SimConnectObject`] macro will automatically call this method for you.
+    /// # Arguments
+    /// * `period` - [`crate::Period`]
+    /// * `condition` - [`crate::Condition`]
+    /// * `interval` - The number of period events that should elapse between transmissions of the data. `0` means the data is transmitted every Period, `1` means that the data is transmitted every other Period, etc.
     ///
-    /// It is possible to change the period of a request, by re-sending the [`crate::SimConnect::request_data_on_sim_object`] call with the same `request_id` parameters, but with a new `period`.
-    /// The one exception to this is the new period cannot be [`crate::Period::Once`], in this case a request with a new `request_id` should be sent.
+    /// # Remarks
+    /// The [`crate::SimConnectObject`] macro will automatically call this method for the struct.
     #[tracing::instrument(name = "SimConnect::request_data_on_sim_object")]
     pub fn request_data_on_sim_object(
         &self,

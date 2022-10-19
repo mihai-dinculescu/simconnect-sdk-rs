@@ -5,50 +5,62 @@ error: Unsupported field type. Only named fields are supported.
 6 | | struct GpsData1(f64);
   | |_____________________^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
  --> tests/02-struct-attr-errors.rs:9:1
   |
 9 | struct GpsData2 {}
   | ^^^^^^^^^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:12:3
    |
 12 | #[simconnect]
    |   ^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:16:3
    |
 16 | #[simconnect()]
    |   ^^^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:20:3
    |
 20 | #[simconnect(period = "second", period = "second")]
    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:24:3
    |
-24 | #[simconnect(condition = "none", condition = "none")]
-   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 | #[simconnect(period = "second", condition = "none", condition = "none")]
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:28:3
    |
-28 | #[simconnect(period = "second", condition = "none", test = "test")]
-   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+28 | #[simconnect(period = "second", interval = 0, interval = 0)]
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:32:3
    |
-32 | #[simconnect(periodX = "second", condition = "none")]
-   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+32 | #[simconnect(period = "second", test = "test")]
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-error: expected attribute `#[simconnect(period = "...", condition = "...")]`
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:36:3
    |
-36 | #[simconnect(period = "second", conditionX = "none")]
+36 | #[simconnect(periodX = "second", condition = "none")]
    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
+  --> tests/02-struct-attr-errors.rs:40:3
+   |
+40 | #[simconnect(period = "second", conditionX = "none")]
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
+  --> tests/02-struct-attr-errors.rs:44:3
+   |
+44 | #[simconnect(period = "second", intervalX = 0)]
+   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

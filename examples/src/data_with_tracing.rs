@@ -3,6 +3,7 @@ use tracing::{error, info};
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 
 /// A data structure that will be used to receive data from SimConnect.
+/// See the documentation of `SimConnectObject` for more information on the arguments of the `simconnect` attribute.
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second")]
 #[allow(dead_code)]

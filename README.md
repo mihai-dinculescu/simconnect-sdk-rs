@@ -15,6 +15,7 @@ simconnect-sdk = { version = "0.1", features = ["derive"] }
 use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
 
 /// A data structure that will be used to receive data from SimConnect.
+/// See the documentation of `SimConnectObject` for more information on the arguments of the `simconnect` attribute.
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second")]
 #[allow(dead_code)]

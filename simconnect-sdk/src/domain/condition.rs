@@ -5,7 +5,7 @@ use crate::bindings;
 pub enum Condition {
     /// The default, data will be sent strictly according to the defined period.
     None,
-    /// Data will only be sent to the client when one or more values have changed.
+    /// Data will only be sent to the client when one or more values have changed. All the variables in a data definition will be returned if just one of the values changes.
     Changed,
 }
 
