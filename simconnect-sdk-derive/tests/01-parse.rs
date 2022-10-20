@@ -3,7 +3,7 @@
 use simconnect_sdk_derive::SimConnectObject;
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second")]
-struct GpsData1 {
+struct Data1 {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     pub lat: f64,
     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
@@ -12,7 +12,7 @@ struct GpsData1 {
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData2 {
+struct Data2 {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     pub lat: f64,
     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
@@ -21,7 +21,7 @@ struct GpsData2 {
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "visual-frame", condition = "changed")]
-struct GpsData3 {
+struct Data3 {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     pub lat: f64,
     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
@@ -30,7 +30,7 @@ struct GpsData3 {
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "visual-frame", condition = "changed", interval = 0)]
-struct GpsData4 {
+struct Data4 {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     pub lat: f64,
     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]

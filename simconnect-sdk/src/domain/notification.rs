@@ -35,12 +35,12 @@ impl Object {
     ///
     /// # Errors
     /// - [`crate::SimConnectError::ObjectMismatch`] -- The type of this SimConnect object is different from `T`.
-    pub fn try_transmute<T: SimConnectObjectExt>(&self) -> Result<T, SimConnectError> {
+    pub fn try_transmute<T: SimConnectObjectExt, I>(&self) -> Result<I, SimConnectError> {
         let type_name: String = std::any::type_name::<T>().into();
 
         if self.type_name == type_name {
-            let data: &T = unsafe { std::mem::transmute_copy(&self.data_addr) };
-            Ok(data.clone())
+            let data: I = unsafe { std::ptr::read_unaligned(self.data_addr as *const I) };
+            Ok(data)
         } else {
             Err(SimConnectError::ObjectMismatch {
                 actual: self.type_name.clone(),

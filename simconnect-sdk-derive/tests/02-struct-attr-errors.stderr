@@ -2,14 +2,14 @@ error: Unsupported field type. Only named fields are supported.
  --> tests/02-struct-attr-errors.rs:5:1
   |
 5 | / #[simconnect(period = "visual-frame", condition = "changed")]
-6 | | struct GpsData1(f64);
-  | |_____________________^
+6 | | struct Data1(f64);
+  | |__________________^
 
 error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
  --> tests/02-struct-attr-errors.rs:9:1
   |
-9 | struct GpsData2 {}
-  | ^^^^^^^^^^^^^^^^^^
+9 | struct Data2 {}
+  | ^^^^^^^^^^^^^^^
 
 error: expected attribute `#[simconnect(period = "...", condition = "...", interval = ...)]`. `condition` and `interval` are optional.
   --> tests/02-struct-attr-errors.rs:12:3

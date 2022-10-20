@@ -68,21 +68,23 @@ impl SimConnect {
             );
         };
 
-        let result = match unsafe { (*data_buf).dwID as i32 } {
+        let recv_id = unsafe { (*data_buf).dwID as i32 };
+
+        let result = match recv_id {
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_OPEN => Some(Notification::Open),
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_QUIT => Some(Notification::Quit),
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EVENT => {
-                let event = unsafe { *(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
+                let event: &bindings::SIMCONNECT_RECV_EVENT =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
+
                 let event = Event::try_from(event.uEventID)
                     .map_err(|_| SimConnectError::SimConnectUnrecognizedEvent(event.uEventID))?;
+
                 Some(Notification::Event(event))
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_SIMOBJECT_DATA => {
-                let event: &bindings::SIMCONNECT_RECV_SIMOBJECT_DATA = unsafe {
-                    std::mem::transmute_copy(
-                        &(data_buf as *const bindings::SIMCONNECT_RECV_SIMOBJECT_DATA),
-                    )
-                };
+                let event: &bindings::SIMCONNECT_RECV_SIMOBJECT_DATA =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_SIMOBJECT_DATA) };
 
                 let type_name = self.get_type_name_by_request_id(event.dwDefineID);
 
@@ -99,11 +101,8 @@ impl SimConnect {
                 }
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_AIRPORT_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_AIRPORT_LIST = unsafe {
-                    std::mem::transmute_copy(
-                        &(data_buf as *const bindings::SIMCONNECT_RECV_AIRPORT_LIST),
-                    )
-                };
+                let event: &bindings::SIMCONNECT_RECV_AIRPORT_LIST =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_AIRPORT_LIST) };
 
                 let data = (0..event._base.dwArraySize as usize)
                     .map(|i| {
@@ -122,11 +121,8 @@ impl SimConnect {
                 Some(Notification::AirportList(data))
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_WAYPOINT_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_WAYPOINT_LIST = unsafe {
-                    std::mem::transmute_copy(
-                        &(data_buf as *const bindings::SIMCONNECT_RECV_WAYPOINT_LIST),
-                    )
-                };
+                let event: &bindings::SIMCONNECT_RECV_WAYPOINT_LIST =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_WAYPOINT_LIST) };
 
                 let data = (0..event._base.dwArraySize as usize)
                     .map(|i| {
@@ -146,11 +142,8 @@ impl SimConnect {
                 Some(Notification::WaypointList(data))
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NDB_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_NDB_LIST = unsafe {
-                    std::mem::transmute_copy(
-                        &(data_buf as *const bindings::SIMCONNECT_RECV_NDB_LIST),
-                    )
-                };
+                let event: &bindings::SIMCONNECT_RECV_NDB_LIST =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_NDB_LIST) };
 
                 let data = (0..event._base.dwArraySize as usize)
                     .map(|i| {
@@ -171,11 +164,8 @@ impl SimConnect {
                 Some(Notification::NdbList(data))
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_VOR_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_VOR_LIST = unsafe {
-                    std::mem::transmute_copy(
-                        &(data_buf as *const bindings::SIMCONNECT_RECV_VOR_LIST),
-                    )
-                };
+                let event: &bindings::SIMCONNECT_RECV_VOR_LIST =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_VOR_LIST) };
 
                 let data = (0..event._base.dwArraySize as usize)
                     .map(|i| {
@@ -241,13 +231,12 @@ impl SimConnect {
                 Some(Notification::VorList(data))
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EXCEPTION => {
-                let event = unsafe { *(data_buf as *const bindings::SIMCONNECT_RECV_EXCEPTION) };
+                let event: &bindings::SIMCONNECT_RECV_EXCEPTION =
+                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EXCEPTION) };
                 Some(Notification::Exception(event.dwException))
             }
             bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL => None,
-            _ => panic!("Got unrecognized notification: {}", unsafe {
-                (*data_buf).dwID as i32
-            }),
+            id => panic!("Got unrecognized notification: {id}"),
         };
 
         Ok(result)

@@ -19,13 +19,19 @@ use simconnect_sdk::{Notification, SimConnect, SimConnectObject};
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second")]
 #[allow(dead_code)]
-struct GpsData {
+struct AirplaneData {
+    #[simconnect(name = "TITLE")]
+    title: String,
+    #[simconnect(name = "CATEGORY")]
+    category: String,
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees")]
     lat: f64,
     #[simconnect(name = "PLANE LONGITUDE", unit = "degrees")]
     lon: f64,
     #[simconnect(name = "PLANE ALTITUDE", unit = "feet")]
     alt: f64,
+    #[simconnect(name = "SIM ON GROUND")]
+    sim_on_ground: bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -43,17 +49,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         println!("Connection opened.");
 
                         // After the connection is successfully open, we register the struct
-                        client.register_object::<GpsData>()?;
+                        client.register_object::<AirplaneData>()?;
                     }
                     Some(Notification::Object(data)) => {
-                        if let Ok(gps_data) = GpsData::try_from(&data) {
-                            println!("{gps_data:?}");
+                        if let Ok(airplane_data) = AirplaneData::try_from(&data) {
+                            println!("{airplane_data:?}");
 
                             notifications_received += 1;
 
                             // After we have received 10 notifications, we unregister the struct
                             if notifications_received > 10 {
-                                client.unregister_object::<GpsData>()?;
+                                client.unregister_object::<AirplaneData>()?;
                                 println!("Subscription stopped.");
                                 break;
                             }

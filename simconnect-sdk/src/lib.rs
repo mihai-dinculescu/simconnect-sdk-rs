@@ -26,6 +26,7 @@ pub(crate) use macros::{as_c_string, ok_if_fail, success};
 
 pub use domain::*;
 pub use errors::SimConnectError;
+pub use helpers::fixed_c_str_to_string;
 pub use simconnect::SimConnect;
 pub use simconnect_object_ext::SimConnectObjectExt;
 

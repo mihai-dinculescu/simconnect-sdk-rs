@@ -19,8 +19,20 @@ struct GpsData {
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "changed")]
 #[allow(dead_code)]
+struct AirplaneData {
+    #[simconnect(name = "TITLE")]
+    title: String,
+    #[simconnect(name = "CATEGORY")]
+    category: String,
+}
+
+/// A third data structure that will be used to receive data from SimConnect.
+/// See the documentation of `SimConnectObject` for more information on the arguments of the `simconnect` attribute.
+#[derive(Debug, Clone, SimConnectObject)]
+#[simconnect(period = "second", condition = "changed")]
+#[allow(dead_code)]
 pub struct OnGround {
-    #[simconnect(name = "SIM ON GROUND", unit = "bool")]
+    #[simconnect(name = "SIM ON GROUND")]
     sim_on_ground: bool,
 }
 
@@ -37,11 +49,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     // After the connection is successfully open, we register the structs
                     client.register_object::<GpsData>()?;
+                    client.register_object::<AirplaneData>()?;
                     client.register_object::<OnGround>()?;
                 }
                 Some(Notification::Object(data)) => {
                     if let Ok(gps_data) = GpsData::try_from(&data) {
                         println!("{gps_data:?}");
+                        // We've already got our data, there's no point in trying another in this iteration
+                        continue;
+                    }
+                    if let Ok(airplane_data) = AirplaneData::try_from(&data) {
+                        println!("{airplane_data:?}");
                         // We've already got our data, there's no point in trying another in this iteration
                         continue;
                     }

@@ -3,45 +3,45 @@ use simconnect_sdk_derive::SimConnectObject;
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "visual-frame", condition = "changed")]
-struct GpsData1(f64);
+struct Data1(f64);
 
 #[derive(Debug, Clone, SimConnectObject)]
-struct GpsData2 {}
+struct Data2 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect]
-struct GpsData3 {}
+struct Data3 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect()]
-struct GpsData4 {}
+struct Data4 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", period = "second")]
-struct GpsData5 {}
+struct Data5 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none", condition = "none")]
-struct GpsData6 {}
+struct Data6 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", interval = 0, interval = 0)]
-struct GpsData7 {}
+struct Data7 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", test = "test")]
-struct GpsData8 {}
+struct Data8 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(periodX = "second", condition = "none")]
-struct GpsData9 {}
+struct Data9 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", conditionX = "none")]
-struct GpsData10 {}
+struct Data10 {}
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", intervalX = 0)]
-struct GpsData11 {}
+struct Data11 {}
 
 fn main() {}

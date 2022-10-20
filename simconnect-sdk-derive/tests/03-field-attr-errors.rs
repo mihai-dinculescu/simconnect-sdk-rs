@@ -3,69 +3,62 @@ use simconnect_sdk_derive::SimConnectObject;
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData1 {
+struct Data1 {
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData2 {
+struct Data2 {
     #[simconnect]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData3 {
+struct Data3 {
     #[simconnect()]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData4 {
-    #[simconnect(name = "PLANE LATITUDE")]
-    pub lat: f64,
-}
-
-#[derive(Debug, Clone, SimConnectObject)]
-#[simconnect(period = "second", condition = "none")]
-struct GpsData5 {
+struct Data4 {
     #[simconnect(unit = "degrees")]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData6 {
+struct Data5 {
     #[simconnect(name = "PLANE LATITUDE", name = "PLANE LATITUDE")]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData7 {
+struct Data6 {
     #[simconnect(unit = "degrees", unit = "degrees")]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData8 {
+struct Data7 {
     #[simconnect(name = "PLANE LATITUDE", unit = "degrees", unit = "degrees")]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData9 {
+struct Data8 {
     #[simconnect(nameX = "PLANE LATITUDE", unit = "degrees")]
     pub lat: f64,
 }
 
 #[derive(Debug, Clone, SimConnectObject)]
 #[simconnect(period = "second", condition = "none")]
-struct GpsData10 {
+struct Data9 {
     #[simconnect(name = "PLANE LATITUDE", unitX = "degrees")]
     pub lat: f64,
 }

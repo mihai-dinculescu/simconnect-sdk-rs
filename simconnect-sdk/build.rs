@@ -44,6 +44,7 @@ fn main() {
         .allowlist_var("SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER")
         .allowlist_var("SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE")
         .allowlist_var("SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME")
+        .allowlist_var("SIMCONNECT_OBJECT_ID_USER")
         .generate()
         .expect("Unable to generate bindings");
 

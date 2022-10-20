@@ -3,4 +3,5 @@
 pub enum DataType {
     Float64,
     Bool,
+    String,
 }
