@@ -1,12 +1,16 @@
 [package]
 name = "simconnect-sdk-derive"
 version = "0.1.0"
-authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
 edition = "2021"
-description = "Macros of SimConnect SDK for Rust"
 license = "MIT"
+authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
+description = "Macros implementation for SimConnect SDK"
+keywords = ["simconnect", "MSFS-2020", "simulation", "aerospace"]
+categories = ["aerospace", "simulation", "aerospace::simulation", "games"]
+readme = "README.md"
+repository = "https://github.com/mihai-dinculescu/simconnect-sdk"
+include = ["src/**", "LICENSE", "README.md"]
 autotests = false
-publish = false
 
 [lib]
 proc-macro = true

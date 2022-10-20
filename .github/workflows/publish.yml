@@ -1,0 +1,27 @@
+name: Crates.io
+on:
+  release:
+    types:
+      - created
+jobs:
+  publish:
+    name: Publish
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Run build
+        run: cargo build --release --verbose
+      - name: Run publish simconnect-sdk-derive
+        run: cargo publish -p simconnect-sdk-derive --token ${{ secrets.CRATES_IO_TOKEN }}
+      - name: Sleep for 30 seconds
+        run: Start-Sleep -s 30
+        shell: powershell
+      - name: Run publish simconnect-sdk
+        run: cargo publish -p simconnect-sdk --token ${{ secrets.CRATES_IO_TOKEN }}

@@ -148,11 +148,8 @@ pub fn extract_attribute_properties(
                                             }
                                             lit => {
                                                 return Err(syn::Error::new_spanned(
-                                                    nv,
-                                                    format!(
-                                                        "Expected {:?}, found {:?}",
-                                                        property.field_type, lit
-                                                    ),
+                                                    lit,
+                                                    format!("Expected {:?}", property.field_type,),
                                                 )
                                                 .to_compile_error())
                                             }

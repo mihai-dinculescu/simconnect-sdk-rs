@@ -1,14 +1,14 @@
-error: Expected Str, found Int(LitInt { token: 123 })
- --> tests/04-invalid-values.rs:5:14
+error: Expected Str
+ --> tests/04-invalid-values.rs:5:23
   |
 5 | #[simconnect(period = 123, condition = "none")]
-  |              ^^^^^^^^^^^^
+  |                       ^^^
 
-error: Expected Str, found Int(LitInt { token: 123 })
- --> tests/04-invalid-values.rs:9:33
+error: Expected Str
+ --> tests/04-invalid-values.rs:9:45
   |
 9 | #[simconnect(period = "second", condition = 123)]
-  |                                 ^^^^^^^^^^^^^^^
+  |                                             ^^^
 
 error: `period` must be one of ["once", "visual-frame", "sim-frame", "second"].
   --> tests/04-invalid-values.rs:13:14
@@ -22,17 +22,17 @@ error: `condition` must be one of ["none", "changed"].
 17 | #[simconnect(period = "second", condition = "X")]
    |                                 ^^^^^^^^^^^^^^^
 
-error: Expected Int, found Str(LitStr { token: "X" })
-  --> tests/04-invalid-values.rs:21:33
+error: Expected Int
+  --> tests/04-invalid-values.rs:21:44
    |
 21 | #[simconnect(period = "second", interval = "X")]
-   |                                 ^^^^^^^^^^^^^^
+   |                                            ^^^
 
-error: Expected Int, found Float(LitFloat { token: 0.0 })
-  --> tests/04-invalid-values.rs:25:33
+error: Expected Int
+  --> tests/04-invalid-values.rs:25:44
    |
 25 | #[simconnect(period = "second", interval = 0.0)]
-   |                                 ^^^^^^^^^^^^^^
+   |                                            ^^^
 
 error: Field type must be one of ["f64", "bool", "String"].
   --> tests/04-invalid-values.rs:32:14
