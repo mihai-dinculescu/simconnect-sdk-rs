@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
-description = "Macros implementation for SimConnect SDK"
+description = "Macros implementation for SimConnect SDK. An opinionated SimConnect Client that encapsulates the C API fully and optimizes for developer experience."
 keywords = ["simconnect", "MSFS-2020", "simulation", "aerospace"]
 categories = ["aerospace", "simulation", "aerospace::simulation", "games"]
 readme = "README.md"
@@ -28,3 +28,6 @@ once_cell = "1.7"
 [dev-dependencies]
 simconnect-sdk = { path = "../simconnect-sdk" }
 trybuild = { version = "1.0", features = ["diff"] }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-pc-windows-msvc"]

@@ -1,3 +1,5 @@
+//! This crate provides the [`crate::SimConnectObject`] derive macro of simconnect-sdk.
+
 extern crate proc_macro;
 
 use std::collections::HashMap;

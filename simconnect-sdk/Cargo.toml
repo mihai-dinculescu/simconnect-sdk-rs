@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
-description = "SimConnect SDK"
+description = "SimConnect SDK. An opinionated SimConnect Client that encapsulates the C API fully and optimizes for developer experience."
 keywords = ["simconnect", "MSFS-2020", "simulation", "aerospace"]
 categories = ["aerospace", "simulation", "aerospace::simulation", "games"]
 readme = "README.md"
@@ -24,9 +24,7 @@ tracing = "0.1"
 thiserror = "1.0"
 simconnect-sdk-derive = { version = "=0.1.0", path = "../simconnect-sdk-derive", optional = true }
 
-# docs.rs-specific configuration
 [package.metadata.docs.rs]
-# document all features
 all-features = true
-# defines the configuration attribute `docsrs`
 rustdoc-args = ["--cfg", "docsrs"]
+targets = ["x86_64-pc-windows-msvc"]

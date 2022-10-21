@@ -1,0 +1,19 @@
+[tasks.simconnect-sdk-publish-derive]
+workspace = false
+script = [
+'''
+copy LICENSE simconnect-sdk-derive\LICENSE
+copy README.md simconnect-sdk-derive\README.md
+cargo publish -p simconnect-sdk-derive --allow-dirty
+'''
+]
+
+[tasks.simconnect-sdk-publish]
+workspace = false
+script = [
+'''
+copy LICENSE simconnect-sdk\LICENSE
+copy README.md simconnect-sdk\README.md
+cargo publish -p simconnect-sdk --allow-dirty
+'''
+]

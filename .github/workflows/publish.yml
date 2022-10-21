@@ -18,10 +18,17 @@ jobs:
           override: true
       - name: Run build
         run: cargo build --release --verbose
+      - name: Run cargo login
+        shell: pwsh
+        run: cargo login $Env:CRATES_IO_TOKEN
+        env:
+          CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
       - name: Run publish simconnect-sdk-derive
-        run: cargo publish -p simconnect-sdk-derive --token ${{ secrets.CRATES_IO_TOKEN }}
+        shell: pwsh
+        run: cargo make simconnect-sdk-publish-derive
       - name: Sleep for 30 seconds
+        shell: pwsh
         run: Start-Sleep -s 30
-        shell: powershell
       - name: Run publish simconnect-sdk
-        run: cargo publish -p simconnect-sdk --token ${{ secrets.CRATES_IO_TOKEN }}
+        shell: pwsh
+        run: cargo make simconnect-sdk-publish
