@@ -6,6 +6,8 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+## [v0.1.1] - 2022-10-23
+
 ### Fixed
 
 - Docs.rs build should now pass.
@@ -19,5 +21,6 @@ file. This change log follows the conventions of
 ### Initial Release of simconnect-sdk
 
 [unreleased]: https://github.com/mihai-dinculescu/simconnect-sdk
+[v0.1.1]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.1
 [v0.1.0]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.0
 [keepachangelog]: https://keepachangelog.com

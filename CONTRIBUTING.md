@@ -6,13 +6,14 @@ If you're thinking to create a PR with large feature/change, please first discus
 ## Releases
 
 - Update version in `simconnect-sdk-derive/Cargo.toml`
+- Update version in `examples/Cargo.toml`
 - Update version in `simconnect-sdk/Cargo.toml` (crate + `simconnect-sdk-derive`)
 - Update CHANGELOG.md
 - Commit
 - Add tag
 
   ```bash
-  git tag -a vX.X.X
+  git tag -a vX.X.X -m "vX.X.X"
   ```
 
 - Push

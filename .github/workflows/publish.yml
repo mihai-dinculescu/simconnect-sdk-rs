@@ -16,6 +16,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - uses: davidB/rust-cargo-make@v1
       - name: Run build
         run: cargo build --release --verbose
       - name: Run cargo login
