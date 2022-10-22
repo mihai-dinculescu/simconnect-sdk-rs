@@ -90,13 +90,13 @@ See [more examples][examples].
 
 Contributions are welcome and encouraged! See [CONTRIBUTING.md][contributing].
 
-## Supported Features
+## Supported features
 
 See [FEATURES.md][features].
 
 ## Credits
 
-Inspired by [Sequal32/simconnect-rust][inspired_by].
+Inspired by [rylev/msfs2020][msfs2020] and [Sequal32/simconnect-rust][simconnect-rust].
 
 [crates_badge]: https://img.shields.io/crates/v/simconnect-sdk.svg
 [crates]: https://crates.io/crates/simconnect-sdk
@@ -110,4 +110,5 @@ Inspired by [Sequal32/simconnect-rust][inspired_by].
 [examples]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/main/examples
 [contributing]: https://github.com/mihai-dinculescu/simconnect-sdk/blob/main/CONTRIBUTING.md
 [features]: https://github.com/mihai-dinculescu/simconnect-sdk/blob/main/FEATURES.md
-[inspired_by]: https://github.com/Sequal32/simconnect-rust
+[msfs2020]: https://github.com/rylev/msfs2020
+[simconnect-rust]: https://github.com/Sequal32/simconnect-rust
