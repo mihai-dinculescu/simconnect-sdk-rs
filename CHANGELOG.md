@@ -6,19 +6,23 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Added
+
+- `Condition`, `DataType`, `FacilityType` and `Period` now derive `Debug`.
+
 ### Fixed
 
 - Docs.rs build should now pass. Take #2.
 
 ## [v0.1.1] - 2022-10-23
 
-### Fixed
-
-- Docs.rs build should now pass.
-
 ### Changed
 
 - The docs and README files have been improved.
+
+### Fixed
+
+- Docs.rs build should now pass.
 
 ## [v0.1.0] - 2022-10-22
 

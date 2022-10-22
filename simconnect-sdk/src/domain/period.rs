@@ -5,7 +5,7 @@ use crate::bindings;
 /// 1 - every other interval.
 /// 2 - every third interval.
 /// etc.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Period {
     /// Specifies that the data should be sent once only. Note that this is not an efficient way of receiving data frequently, use one of the other periods if there is a regular frequency to the data request.
     Once,

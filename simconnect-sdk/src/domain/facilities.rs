@@ -2,7 +2,7 @@ use crate::bindings;
 
 /// Facility Type. The simulation keeps a facilities cache of all the airports, waypoints, NDB and VOR stations within a certain radius of the user aircraft.
 /// They can be requested using [`crate::SimConnect::subscribe_to_facilities`] or [`crate::SimConnect::request_facilities_list`].
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum FacilityType {
     Airport,
     Waypoint,

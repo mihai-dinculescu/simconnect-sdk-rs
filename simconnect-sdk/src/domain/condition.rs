@@ -1,7 +1,7 @@
 use crate::bindings;
 
 /// Specifies under which conditions the data is to be sent by the server and received by the client.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Condition {
     /// The default, data will be sent strictly according to the defined period.
     None,
