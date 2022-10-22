@@ -1,6 +1,6 @@
 [package]
 name = "simconnect-sdk-examples"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
 edition = "2021"
 description = "SimConnect SDK Examples"
