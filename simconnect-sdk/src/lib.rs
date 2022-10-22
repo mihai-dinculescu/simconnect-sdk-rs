@@ -2,7 +2,6 @@
 //! SimConnect SDK in Rust.
 //!
 //! ## Usage
-
 //! ```toml
 //! [dependencies]
 //! simconnect-sdk = { version = "0.1", features = ["derive"] }
@@ -97,8 +96,6 @@ pub use simconnect::SimConnect;
 pub use simconnect_object_ext::SimConnectObjectExt;
 
 #[cfg(feature = "simconnect-sdk-derive")]
-#[cfg_attr(docsrs, doc(cfg(feature = "simconnect-sdk-derive")))]
 extern crate simconnect_sdk_derive;
 #[cfg(feature = "simconnect-sdk-derive")]
-#[cfg_attr(docsrs, doc(cfg(feature = "simconnect-sdk-derive")))]
 pub use simconnect_sdk_derive::*;

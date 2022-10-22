@@ -6,6 +6,10 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Fixed
+
+- Docs.rs build should now pass. Take #2.
+
 ## [v0.1.1] - 2022-10-23
 
 ### Fixed

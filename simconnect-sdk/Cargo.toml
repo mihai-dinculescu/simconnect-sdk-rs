@@ -25,6 +25,6 @@ thiserror = "1.0"
 simconnect-sdk-derive = { version = "=0.1.1", path = "../simconnect-sdk-derive", optional = true }
 
 [package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
-targets = ["x86_64-pc-windows-msvc"]
+features = ["derive"]
+default-target = "x86_64-pc-windows-msvc"
+targets = []

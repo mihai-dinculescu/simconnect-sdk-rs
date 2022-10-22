@@ -2,16 +2,23 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rerun-if-changed=simconnect-sdk/ffi/include/SimConnect.h");
-    println!("cargo:rerun-if-changed=simconnect-sdk/ffi/lib/SimConnect.lib");
-    println!("cargo:rerun-if-changed=simconnect-sdk/ffi/lib/SimConnect.dll");
+    println!("cargo:rerun-if-changed=ffi/include/Wrapper.h");
+    println!("cargo:rerun-if-changed=ffi/include/WrapperFake.h");
+    println!("cargo:rerun-if-changed=ffi/include/SimConnect.h");
+    println!("cargo:rerun-if-changed=ffi/lib/SimConnect.lib");
+    println!("cargo:rerun-if-changed=ffi/lib/SimConnect.dll");
 
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     println!("cargo:rustc-link-search={}", out_path.to_string_lossy());
     println!("cargo:rustc-link-lib=static=SimConnect");
 
-    let bindings = bindgen::Builder::default()
-        .header("ffi/include/SimConnect.h")
+    let builder = if let Ok(_) = env::var("DOCS_RS") {
+        bindgen::Builder::default().header("ffi/include/WrapperFake.h")
+    } else {
+        bindgen::Builder::default().header("ffi/include/Wrapper.h")
+    };
+
+    let bindings = builder
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .clang_args(&["-x", "c++"])
         .allowlist_function("SimConnect_Open")

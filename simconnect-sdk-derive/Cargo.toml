@@ -30,4 +30,5 @@ simconnect-sdk = { path = "../simconnect-sdk" }
 trybuild = { version = "1.0", features = ["diff"] }
 
 [package.metadata.docs.rs]
-targets = ["x86_64-pc-windows-msvc"]
+default-target = "x86_64-pc-windows-msvc"
+targets = []
