@@ -4,7 +4,7 @@ impl SimConnect {
     /// Associates a client defined event with a Microsoft Flight Simulator event name.
     ///
     /// WIP
-    #[tracing::instrument(name = "SimConnect::register_event")]
+    #[tracing::instrument(name = "SimConnect::register_event", level = "debug", skip(self))]
     pub fn register_event(
         &self,
         event: Event,

@@ -1,5 +1,7 @@
 use std::{collections::HashMap, ffi::c_void};
 
+use tracing::{error, span, trace, warn, Level};
+
 use crate::{
     as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, Airport, Event,
     Notification, Object, SimConnectError, Waypoint, NDB, VOR,
@@ -87,7 +89,7 @@ pub struct SimConnect {
 
 impl SimConnect {
     /// Create a new SimConnect SDK client.
-    #[tracing::instrument(name = "SimConnect::new")]
+    #[tracing::instrument(name = "SimConnect::new", level = "debug")]
     pub fn new(name: &str) -> Result<Self, SimConnectError> {
         let mut handle = std::ptr::null_mut();
 
@@ -136,180 +138,212 @@ impl SimConnect {
 
         let recv_id = unsafe { (*data_buf).dwID as i32 };
 
-        let result = match recv_id {
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_OPEN => Some(Notification::Open),
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_QUIT => Some(Notification::Quit),
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EVENT => {
-                let event: &bindings::SIMCONNECT_RECV_EVENT =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
+        if recv_id == bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL {
+            Ok(None)
+        } else {
+            let span = span!(Level::TRACE, "SimConnect::get_next_dispatch");
+            let _enter = span.enter();
 
-                let event = Event::try_from(event.uEventID)
-                    .map_err(|_| SimConnectError::SimConnectUnrecognizedEvent(event.uEventID))?;
-
-                Some(Notification::Event(event))
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_SIMOBJECT_DATA => {
-                let event: &bindings::SIMCONNECT_RECV_SIMOBJECT_DATA =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_SIMOBJECT_DATA) };
-
-                let type_name = self.get_type_name_by_request_id(event.dwDefineID);
-
-                match type_name {
-                    Some(type_name) => {
-                        let data = Object {
-                            type_name,
-                            data_addr: std::ptr::addr_of!(event.dwData),
-                        };
-
-                        Some(Notification::Object(data))
-                    }
-                    _ => None,
+            let result = match recv_id {
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_OPEN => {
+                    trace!("Received SIMCONNECT_RECV_OPEN");
+                    Some(Notification::Open)
                 }
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_AIRPORT_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_AIRPORT_LIST =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_AIRPORT_LIST) };
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_QUIT => {
+                    trace!("Received SIMCONNECT_RECV_QUIT");
+                    Some(Notification::Quit)
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EVENT => {
+                    trace!("Received SIMCONNECT_RECV_EVENT");
+                    let event: &bindings::SIMCONNECT_RECV_EVENT =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
 
-                let data = (0..event._base.dwArraySize as usize)
-                    .map(|i| {
-                        // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
-                        let record = unsafe { event.rgData.get_unchecked(i) };
+                    let event = Event::try_from(event.uEventID).map_err(|_| {
+                        SimConnectError::SimConnectUnimplementedEvent(event.uEventID)
+                    })?;
 
-                        Airport {
-                            icao: fixed_c_str_to_string(&record.Icao),
-                            lat: record.Latitude,
-                            lon: record.Longitude,
-                            alt: record.Altitude,
+                    Some(Notification::Event(event))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_SIMOBJECT_DATA => {
+                    trace!("Received SIMCONNECT_RECV_SIMOBJECT_DATA");
+
+                    let event: &bindings::SIMCONNECT_RECV_SIMOBJECT_DATA =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_SIMOBJECT_DATA) };
+
+                    let type_name = self.get_type_name_by_request_id(event.dwDefineID);
+
+                    match type_name {
+                        Some(type_name) => {
+                            let data = Object {
+                                type_name,
+                                data_addr: std::ptr::addr_of!(event.dwData),
+                            };
+
+                            Some(Notification::Object(data))
                         }
-                    })
-                    .collect::<Vec<_>>();
+                        _ => None,
+                    }
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_AIRPORT_LIST => {
+                    trace!("Received SIMCONNECT_RECV_AIRPORT_LIST");
 
-                Some(Notification::AirportList(data))
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_WAYPOINT_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_WAYPOINT_LIST =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_WAYPOINT_LIST) };
+                    let event: &bindings::SIMCONNECT_RECV_AIRPORT_LIST =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_AIRPORT_LIST) };
 
-                let data = (0..event._base.dwArraySize as usize)
-                    .map(|i| {
-                        // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
-                        let record = unsafe { event.rgData.get_unchecked(i) };
+                    let data = (0..event._base.dwArraySize as usize)
+                        .map(|i| {
+                            // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
+                            let record = unsafe { event.rgData.get_unchecked(i) };
 
-                        Waypoint {
-                            icao: fixed_c_str_to_string(&record._base.Icao),
-                            lat: record._base.Latitude,
-                            lon: record._base.Longitude,
-                            alt: record._base.Altitude,
-                            mag_var: record.fMagVar,
-                        }
-                    })
-                    .collect::<Vec<_>>();
+                            Airport {
+                                icao: fixed_c_str_to_string(&record.Icao),
+                                lat: record.Latitude,
+                                lon: record.Longitude,
+                                alt: record.Altitude,
+                            }
+                        })
+                        .collect::<Vec<_>>();
 
-                Some(Notification::WaypointList(data))
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NDB_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_NDB_LIST =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_NDB_LIST) };
+                    Some(Notification::AirportList(data))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_WAYPOINT_LIST => {
+                    trace!("Received SIMCONNECT_RECV_WAYPOINT_LIST");
 
-                let data = (0..event._base.dwArraySize as usize)
-                    .map(|i| {
-                        // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
-                        let record = unsafe { event.rgData.get_unchecked(i) };
+                    let event: &bindings::SIMCONNECT_RECV_WAYPOINT_LIST =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_WAYPOINT_LIST) };
 
-                        NDB {
-                            icao: fixed_c_str_to_string(&record._base._base.Icao),
-                            lat: record._base._base.Latitude,
-                            lon: record._base._base.Longitude,
-                            alt: record._base._base.Altitude,
-                            mag_var: record._base.fMagVar,
-                            frequency: record.fFrequency,
-                        }
-                    })
-                    .collect::<Vec<_>>();
+                    let data = (0..event._base.dwArraySize as usize)
+                        .map(|i| {
+                            // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
+                            let record = unsafe { event.rgData.get_unchecked(i) };
 
-                Some(Notification::NdbList(data))
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_VOR_LIST => {
-                let event: &bindings::SIMCONNECT_RECV_VOR_LIST =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_VOR_LIST) };
+                            Waypoint {
+                                icao: fixed_c_str_to_string(&record._base.Icao),
+                                lat: record._base.Latitude,
+                                lon: record._base.Longitude,
+                                alt: record._base.Altitude,
+                                mag_var: record.fMagVar,
+                            }
+                        })
+                        .collect::<Vec<_>>();
 
-                let data = (0..event._base.dwArraySize as usize)
-                    .map(|i| {
-                        // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
-                        let record = unsafe { event.rgData.get_unchecked(i) };
+                    Some(Notification::WaypointList(data))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NDB_LIST => {
+                    trace!("Received SIMCONNECT_RECV_NDB_LIST");
 
-                        let has_nav_signal = record.Flags
-                            & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL
-                            == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL;
-                        let has_localizer = record.Flags
-                            & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER
-                            == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER;
-                        let has_glide_slope = record.Flags
-                            & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE
-                            == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE;
-                        let has_dme = record.Flags & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME
-                            == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME;
+                    let event: &bindings::SIMCONNECT_RECV_NDB_LIST =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_NDB_LIST) };
 
-                        VOR {
-                            icao: fixed_c_str_to_string(&record._base._base._base.Icao),
-                            lat: record._base._base._base.Latitude,
-                            lon: record._base._base._base.Longitude,
-                            alt: record._base._base._base.Altitude,
-                            mag_var: record._base._base.fMagVar,
-                            has_nav_signal,
-                            has_localizer,
-                            has_glide_slope,
-                            has_dme,
-                            localizer: if has_localizer {
-                                Some(record.fLocalizer)
-                            } else {
-                                None
-                            },
-                            glide_lat: if has_nav_signal {
-                                Some(record.GlideLat)
-                            } else {
-                                None
-                            },
-                            glide_lon: if has_nav_signal {
-                                Some(record.GlideLon)
-                            } else {
-                                None
-                            },
-                            glide_alt: if has_nav_signal {
-                                Some(record.GlideAlt)
-                            } else {
-                                None
-                            },
-                            glide_slope_angle: if has_glide_slope {
-                                Some(record.fGlideSlopeAngle)
-                            } else {
-                                None
-                            },
-                            frequency: if has_dme {
-                                Some(record._base.fFrequency)
-                            } else {
-                                None
-                            },
-                        }
-                    })
-                    .collect::<Vec<_>>();
+                    let data = (0..event._base.dwArraySize as usize)
+                        .map(|i| {
+                            // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
+                            let record = unsafe { event.rgData.get_unchecked(i) };
 
-                Some(Notification::VorList(data))
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EXCEPTION => {
-                let event: &bindings::SIMCONNECT_RECV_EXCEPTION =
-                    unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EXCEPTION) };
-                Some(Notification::Exception(event.dwException))
-            }
-            bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL => None,
-            id => panic!("Got unrecognized notification: {id}"),
-        };
+                            NDB {
+                                icao: fixed_c_str_to_string(&record._base._base.Icao),
+                                lat: record._base._base.Latitude,
+                                lon: record._base._base.Longitude,
+                                alt: record._base._base.Altitude,
+                                mag_var: record._base.fMagVar,
+                                frequency: record.fFrequency,
+                            }
+                        })
+                        .collect::<Vec<_>>();
 
-        Ok(result)
+                    Some(Notification::NdbList(data))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_VOR_LIST => {
+                    trace!("Received SIMCONNECT_RECV_VOR_LIST");
+
+                    let event: &bindings::SIMCONNECT_RECV_VOR_LIST =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_VOR_LIST) };
+
+                    let data = (0..event._base.dwArraySize as usize)
+                        .map(|i| {
+                            // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
+                            let record = unsafe { event.rgData.get_unchecked(i) };
+
+                            let has_nav_signal = record.Flags
+                                & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL
+                                == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL;
+                            let has_localizer = record.Flags
+                                & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER
+                                == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER;
+                            let has_glide_slope = record.Flags
+                                & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE
+                                == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE;
+                            let has_dme = record.Flags
+                                & bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME
+                                == bindings::SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME;
+
+                            VOR {
+                                icao: fixed_c_str_to_string(&record._base._base._base.Icao),
+                                lat: record._base._base._base.Latitude,
+                                lon: record._base._base._base.Longitude,
+                                alt: record._base._base._base.Altitude,
+                                mag_var: record._base._base.fMagVar,
+                                has_nav_signal,
+                                has_localizer,
+                                has_glide_slope,
+                                has_dme,
+                                localizer: if has_localizer {
+                                    Some(record.fLocalizer)
+                                } else {
+                                    None
+                                },
+                                glide_lat: if has_nav_signal {
+                                    Some(record.GlideLat)
+                                } else {
+                                    None
+                                },
+                                glide_lon: if has_nav_signal {
+                                    Some(record.GlideLon)
+                                } else {
+                                    None
+                                },
+                                glide_alt: if has_nav_signal {
+                                    Some(record.GlideAlt)
+                                } else {
+                                    None
+                                },
+                                glide_slope_angle: if has_glide_slope {
+                                    Some(record.fGlideSlopeAngle)
+                                } else {
+                                    None
+                                },
+                                frequency: if has_dme {
+                                    Some(record._base.fFrequency)
+                                } else {
+                                    None
+                                },
+                            }
+                        })
+                        .collect::<Vec<_>>();
+
+                    Some(Notification::VorList(data))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EXCEPTION => {
+                    let event: &bindings::SIMCONNECT_RECV_EXCEPTION =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EXCEPTION) };
+
+                    warn!("Received {:?}", event);
+
+                    Some(Notification::Exception(event.dwException))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL => None,
+                id => {
+                    error!("Received unhandled notification ID: {}", id);
+                    panic!("Got unrecognized notification: {id}");
+                }
+            };
+
+            Ok(result)
+        }
     }
 
     /// Register a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
-    #[tracing::instrument(name = "SimConnect::new_request_id")]
+    #[tracing::instrument(name = "SimConnect::new_request_id", level = "trace", skip(self))]
     pub(super) fn new_request_id(&mut self, type_name: String) -> Result<u32, SimConnectError> {
         if self.registered_objects.contains_key(&type_name) {
             return Err(SimConnectError::ObjectAlreadyRegistered(type_name));
@@ -331,13 +365,21 @@ impl SimConnect {
     }
 
     /// Unregister a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
-    #[tracing::instrument(name = "SimConnect::unregister_request_id_by_type_name")]
+    #[tracing::instrument(
+        name = "SimConnect::unregister_request_id_by_type_name",
+        level = "trace",
+        skip(self)
+    )]
     pub(super) fn unregister_request_id_by_type_name(&mut self, type_name: &str) -> Option<u32> {
         self.registered_objects.remove(type_name)
     }
 
     /// Get the Type Name of a Request ID.
-    #[tracing::instrument(name = "SimConnect::get_type_name_by_request_id")]
+    #[tracing::instrument(
+        name = "SimConnect::get_type_name_by_request_id",
+        level = "trace",
+        skip(self)
+    )]
     pub(super) fn get_type_name_by_request_id(&self, request_id: u32) -> Option<String> {
         self.registered_objects
             .iter()
@@ -347,6 +389,7 @@ impl SimConnect {
 }
 
 impl Drop for SimConnect {
+    #[tracing::instrument(name = "SimConnect::drop", level = "debug", skip(self))]
     fn drop(&mut self) {
         let _ = unsafe { bindings::SimConnect_Close(self.handle.as_ptr()) };
     }

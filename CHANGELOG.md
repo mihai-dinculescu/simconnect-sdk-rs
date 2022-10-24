@@ -6,6 +6,10 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+## Changed
+
+- The tracing information has been adjusted to be at the `info` and `debug` levels instead of `info`.
+
 ## [v0.1.2] - 2022-10-22
 
 ### Added

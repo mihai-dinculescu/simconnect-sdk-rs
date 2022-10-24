@@ -22,6 +22,17 @@ struct AirplaneData {
     sim_on_ground: bool,
 }
 
+/// To see all tracing information at the `trace` level and above (most verbose), run:
+///
+/// ```bash
+/// RUST_LOG=trace cargo run --bin data_with_tracing
+/// ```
+///
+/// To see all tracing information at the `debug` level and above (less verbose than `info`), run:
+///
+/// ```bash
+/// RUST_LOG=debug cargo run --bin data_with_tracing
+/// ```
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging()?;
 

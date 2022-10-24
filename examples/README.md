@@ -13,10 +13,18 @@ cd simconnect-sdk
 cargo run --bin data
 ```
 
-## Receiving data using tracing
+## Receiving data with tracing
+
+To see all tracing information at the `trace` level and above (most verbose), run:
 
 ```bash
-RUST_LOG=info cargo run --bin data_with_tracing
+RUST_LOG=trace cargo run --bin data_with_tracing
+```
+
+To see all tracing information at the `debug` level and above (less verbose than `info`), run:
+
+```bash
+RUST_LOG=debug cargo run --bin data_with_tracing
 ```
 
 ## Receiving data without the derive macro

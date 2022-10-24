@@ -5,7 +5,7 @@ use crate::{
 
 impl SimConnect {
     // Register an object with SimConnect by assigning it an unique interval `request_id` and then calling the [`crate::SimConnectObjectExt::register`] method on the struct.
-    #[tracing::instrument(name = "SimConnect::register_object")]
+    #[tracing::instrument(name = "SimConnect::register_object", level = "debug", skip(self))]
     pub fn register_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
         let type_name: String = std::any::type_name::<T>().into();
 
@@ -17,7 +17,7 @@ impl SimConnect {
     }
 
     // Unregister an object with SimConnect.
-    #[tracing::instrument(name = "SimConnect::unregister_object")]
+    #[tracing::instrument(name = "SimConnect::unregister_object", level = "debug", skip(self))]
     pub fn unregister_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
         let type_name: String = std::any::type_name::<T>().into();
 
@@ -41,7 +41,11 @@ impl SimConnect {
     ///
     /// # Remarks
     /// The [`crate::SimConnectObject`] macro will automatically call this method for the struct.
-    #[tracing::instrument(name = "SimConnect::add_to_data_definition")]
+    #[tracing::instrument(
+        name = "SimConnect::add_to_data_definition",
+        level = "debug",
+        skip(self)
+    )]
     pub fn add_to_data_definition(
         &self,
         request_id: u32,
@@ -84,7 +88,11 @@ impl SimConnect {
     ///
     /// # Remarks
     /// The [`crate::SimConnectObject`] macro will automatically call this method for the struct.
-    #[tracing::instrument(name = "SimConnect::request_data_on_sim_object")]
+    #[tracing::instrument(
+        name = "SimConnect::request_data_on_sim_object",
+        level = "debug",
+        skip(self)
+    )]
     pub fn request_data_on_sim_object(
         &self,
         request_id: u32,
