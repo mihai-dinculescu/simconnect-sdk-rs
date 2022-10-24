@@ -8,6 +8,10 @@ file. This change log follows the conventions of
 
 ## Changed
 
+- `SimConnect::get_next_dispatch` will now return an error of type `SimConnectError::UnimplementedMessageType` instead of panicking on unrecognized notification types.
+- `SimConnect::get_next_dispatch` will now return an error of type `SimConnectError::SimConnectException` instead of `Notification::Exception`.
+- `SimConnectError::SimConnectUnrecognizedEvent` has been renamed to `SimConnectError::UnimplementedEventType`.
+- `#[non_exhaustive]` has been added to the `SimConnectError` and `Notification` enums.
 - The tracing information has been adjusted to be at the `info` and `debug` levels instead of `info`.
 
 ## [v0.1.2] - 2022-10-22

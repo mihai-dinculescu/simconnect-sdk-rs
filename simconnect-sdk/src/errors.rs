@@ -2,13 +2,20 @@ use thiserror::Error;
 
 /// SimConnect SDK error.
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum SimConnectError {
     /// SimConnect error.
     #[error("SimConnect error: {0}")]
     SimConnectError(i32),
-    #[error("SimConnect unrecognized: {0}")]
-    /// SimConnect unrecognized error. Occurs when an unimplemented event is received by the SDK.
-    SimConnectUnrecognizedEvent(u32),
+    /// SimConnect error.
+    #[error("SimConnect exception: {0}")]
+    SimConnectException(u32),
+    /// An unimplemented event type has been received by the SDK.
+    #[error("Unimplemented event in the SDK: {0}")]
+    UnimplementedEventType(u32),
+    /// An unimplemented message type has been received by the SDK.
+    #[error("Unimplemented notification in the SDK: {0}")]
+    UnimplementedMessageType(i32),
     /// Object already registered with the client instance.
     #[error("Object `{0}` has already been registered")]
     ObjectAlreadyRegistered(String),

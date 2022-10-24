@@ -144,25 +144,24 @@ impl SimConnect {
             let span = span!(Level::TRACE, "SimConnect::get_next_dispatch");
             let _enter = span.enter();
 
-            let result = match recv_id {
+            match recv_id {
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_OPEN => {
                     trace!("Received SIMCONNECT_RECV_OPEN");
-                    Some(Notification::Open)
+                    Ok(Some(Notification::Open))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_QUIT => {
                     trace!("Received SIMCONNECT_RECV_QUIT");
-                    Some(Notification::Quit)
+                    Ok(Some(Notification::Quit))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EVENT => {
                     trace!("Received SIMCONNECT_RECV_EVENT");
                     let event: &bindings::SIMCONNECT_RECV_EVENT =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
 
-                    let event = Event::try_from(event.uEventID).map_err(|_| {
-                        SimConnectError::SimConnectUnimplementedEvent(event.uEventID)
-                    })?;
+                    let event = Event::try_from(event.uEventID)
+                        .map_err(|_| SimConnectError::UnimplementedEventType(event.uEventID))?;
 
-                    Some(Notification::Event(event))
+                    Ok(Some(Notification::Event(event)))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_SIMOBJECT_DATA => {
                     trace!("Received SIMCONNECT_RECV_SIMOBJECT_DATA");
@@ -179,9 +178,9 @@ impl SimConnect {
                                 data_addr: std::ptr::addr_of!(event.dwData),
                             };
 
-                            Some(Notification::Object(data))
+                            Ok(Some(Notification::Object(data)))
                         }
-                        _ => None,
+                        _ => Ok(None),
                     }
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_AIRPORT_LIST => {
@@ -204,7 +203,7 @@ impl SimConnect {
                         })
                         .collect::<Vec<_>>();
 
-                    Some(Notification::AirportList(data))
+                    Ok(Some(Notification::AirportList(data)))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_WAYPOINT_LIST => {
                     trace!("Received SIMCONNECT_RECV_WAYPOINT_LIST");
@@ -227,7 +226,7 @@ impl SimConnect {
                         })
                         .collect::<Vec<_>>();
 
-                    Some(Notification::WaypointList(data))
+                    Ok(Some(Notification::WaypointList(data)))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NDB_LIST => {
                     trace!("Received SIMCONNECT_RECV_NDB_LIST");
@@ -251,7 +250,7 @@ impl SimConnect {
                         })
                         .collect::<Vec<_>>();
 
-                    Some(Notification::NdbList(data))
+                    Ok(Some(Notification::NdbList(data)))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_VOR_LIST => {
                     trace!("Received SIMCONNECT_RECV_VOR_LIST");
@@ -321,7 +320,7 @@ impl SimConnect {
                         })
                         .collect::<Vec<_>>();
 
-                    Some(Notification::VorList(data))
+                    Ok(Some(Notification::VorList(data)))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EXCEPTION => {
                     let event: &bindings::SIMCONNECT_RECV_EXCEPTION =
@@ -329,16 +328,14 @@ impl SimConnect {
 
                     warn!("Received {:?}", event);
 
-                    Some(Notification::Exception(event.dwException))
+                    Err(SimConnectError::SimConnectException(event.dwException))
                 }
-                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL => None,
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL => Ok(None),
                 id => {
                     error!("Received unhandled notification ID: {}", id);
-                    panic!("Got unrecognized notification: {id}");
+                    Err(SimConnectError::UnimplementedMessageType(id))
                 }
-            };
-
-            Ok(result)
+            }
         }
     }
 

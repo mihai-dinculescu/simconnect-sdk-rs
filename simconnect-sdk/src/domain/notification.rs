@@ -2,6 +2,7 @@ use crate::{Airport, Event, SimConnectError, SimConnectObjectExt, Waypoint, NDB,
 
 /// Notification received from SimConnect.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum Notification {
     /// SimConnect open
     Open,
@@ -19,8 +20,6 @@ pub enum Notification {
     VorList(Vec<VOR>),
     /// SimConnect quit
     Quit,
-    /// SimConnect exception
-    Exception(u32),
 }
 
 /// Notification data object.
