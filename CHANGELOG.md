@@ -6,7 +6,9 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
-## Changed
+## [v0.1.3] - 2022-10-24
+
+### Changed
 
 - `SimConnect::get_next_dispatch` will now return an error of type `SimConnectError::UnimplementedMessageType` instead of panicking on unrecognized notification types.
 - `SimConnect::get_next_dispatch` will now return an error of type `SimConnectError::SimConnectException` instead of `Notification::Exception`.
@@ -39,6 +41,7 @@ file. This change log follows the conventions of
 ### Initial Release of simconnect-sdk
 
 [unreleased]: https://github.com/mihai-dinculescu/simconnect-sdk
+[v0.1.3]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.3
 [v0.1.2]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.2
 [v0.1.1]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.1
 [v0.1.0]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.0
