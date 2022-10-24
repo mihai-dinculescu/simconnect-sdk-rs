@@ -12,7 +12,7 @@ fn main() {
     println!("cargo:rustc-link-search={}", out_path.to_string_lossy());
     println!("cargo:rustc-link-lib=static=SimConnect");
 
-    let builder = if let Ok(_) = env::var("DOCS_RS") {
+    let builder = if env::var("DOCS_RS").is_ok() {
         bindgen::Builder::default().header("ffi/include/WrapperFake.h")
     } else {
         bindgen::Builder::default().header("ffi/include/Wrapper.h")
