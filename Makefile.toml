@@ -1,5 +1,24 @@
+[config]
+skip_core_tasks = true
+default_to_workspace = false
+
+[tasks.format]
+command = "cargo"
+args = ["fmt", "--verbose", "--", "--check"]
+
+[tasks.check]
+command = "cargo"
+args = ["check", "--verbose"]
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--all-targets", "--all-features", "--verbose", "--", "-D", "warnings"]
+
+[tasks.test]
+command = "cargo"
+args = ["test", "--verbose"]
+
 [tasks.simconnect-sdk-publish-derive]
-workspace = false
 script = [
 '''
 copy LICENSE simconnect-sdk-derive\LICENSE
@@ -9,7 +28,6 @@ cargo publish -p simconnect-sdk-derive --allow-dirty
 ]
 
 [tasks.simconnect-sdk-publish]
-workspace = false
 script = [
 '''
 copy LICENSE simconnect-sdk\LICENSE
