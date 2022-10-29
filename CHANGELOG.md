@@ -6,6 +6,11 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Added
+
+- `#[derive(PartialEq)]` has been added to `Condition`, `DataType`, `FacilityType`, `NotificationGroup`, `Period`, `ViewType`, `ClientEvent`, `SystemEventRequest` and `SystemEvent`.
+- `#[derive(Eq)]` has been added to `Condition`, `DataType`, `FacilityType`, `NotificationGroup`, `Period`, `ViewType`, `ClientEvent` and `SystemEventRequest`.
+
 ### Changed
 
 - The GitHub repository has been renamed from `mihai-dinculescu/simconnect-sdk` to `mihai-dinculescu/simconnect-sdk-rs`.

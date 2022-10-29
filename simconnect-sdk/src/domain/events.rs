@@ -3,7 +3,7 @@ use std::os::raw::c_char;
 use crate::{bindings, fixed_c_str_to_string, SimConnectError};
 
 /// SimConnect System Event Request.
-#[derive(Debug, Copy, Clone, num_enum::TryFromPrimitive)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, num_enum::TryFromPrimitive)]
 #[repr(u32)]
 #[non_exhaustive]
 pub enum SystemEventRequest {
@@ -84,7 +84,7 @@ impl SystemEventRequest {
 }
 
 /// Cockpit view type.
-#[derive(Debug, Copy, Clone, num_enum::TryFromPrimitive)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, num_enum::TryFromPrimitive)]
 #[repr(u32)]
 pub enum ViewType {
     /// No cockpit view.
@@ -98,7 +98,7 @@ pub enum ViewType {
 }
 
 /// SimConnect System Event Notification.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 #[non_exhaustive]
 pub enum SystemEvent {
     /// A notification every second.
@@ -274,7 +274,7 @@ pub(crate) const CLIENT_EVENT_START: u32 = 128;
 /// SimConnect Client Event.
 ///
 /// WIP. As defined by <https://www.prepar3d.com/SDKv5/sdk/references/variables/event_ids.html>.
-#[derive(Debug, Copy, Clone, num_enum::TryFromPrimitive)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, num_enum::TryFromPrimitive)]
 #[repr(u32)]
 #[non_exhaustive]
 pub enum ClientEvent {
