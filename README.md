@@ -11,7 +11,7 @@ An opinionated SimConnect Client that encapsulates the C API fully and optimizes
 
 ```toml
 [dependencies]
-simconnect-sdk = { version = "0.1", features = ["derive"] }
+simconnect-sdk = { version = "0.2", features = ["derive"] }
 ```
 
 ```rust
