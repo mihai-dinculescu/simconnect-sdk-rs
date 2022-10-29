@@ -1,6 +1,6 @@
 [package]
 name = "simconnect-sdk"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 license = "MIT"
 authors = ["Mihai Dinculescu <mihai.dinculescu@outlook.com>"]
@@ -22,7 +22,7 @@ bindgen = "0.61"
 num_enum = "0.5"
 tracing = "0.1"
 thiserror = "1.0"
-simconnect-sdk-derive = { version = "=0.2.0", path = "../simconnect-sdk-derive", optional = true }
+simconnect-sdk-derive = { version = "=0.2.1", path = "../simconnect-sdk-derive", optional = true }
 
 [package.metadata.docs.rs]
 features = ["derive"]
