@@ -22,15 +22,13 @@ impl SimConnect {
         let type_name = facility_type.to_type_name();
         let request_id = self.new_request_id(type_name)?;
 
-        unsafe {
-            success!(bindings::SimConnect_RequestFacilitiesList(
+        success!(unsafe {
+            bindings::SimConnect_RequestFacilitiesList(
                 self.handle.as_ptr(),
                 facility_type.into(),
                 request_id,
-            ));
-        }
-
-        Ok(())
+            )
+        })
     }
 
     /// Request notifications when a facility of a certain type is added to the facilities cache.
@@ -58,15 +56,13 @@ impl SimConnect {
         let type_name = facility_type.to_type_name();
         let request_id = self.new_request_id(type_name)?;
 
-        unsafe {
-            success!(bindings::SimConnect_SubscribeToFacilities(
+        success!(unsafe {
+            bindings::SimConnect_SubscribeToFacilities(
                 self.handle.as_ptr(),
                 facility_type.into(),
                 request_id,
-            ));
-        }
-
-        Ok(())
+            )
+        })
     }
 
     /// Request that notifications of additions to the facilities cache are not longer sent.
@@ -84,12 +80,9 @@ impl SimConnect {
     ) -> Result<(), SimConnectError> {
         let type_name = facility_type.to_type_name();
 
-        unsafe {
-            success!(bindings::SimConnect_UnsubscribeToFacilities(
-                self.handle.as_ptr(),
-                facility_type.into(),
-            ));
-        }
+        success!(unsafe {
+            bindings::SimConnect_UnsubscribeToFacilities(self.handle.as_ptr(), facility_type.into())
+        })?;
 
         self.unregister_request_id_by_type_name(&type_name);
 

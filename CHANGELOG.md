@@ -6,6 +6,15 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Added
+
+- `Notification::SystemEvent`, `SystemEventRequest` and `SystemEvent` have been added. System Events can be subscribed to by using `SimConnect::subscribe_to_system_event` and unsubscribed from by using `SimConnect::unsubscribe_from_system_event`.
+
+### Changed
+
+- `Notification::Event` has been renamed to `Notification::ClientEvent`.
+- `Event` has been renamed to `ClientEvent` and marked as `non_exhaustive`.
+
 ## [v0.1.3] - 2022-10-24
 
 ### Changed

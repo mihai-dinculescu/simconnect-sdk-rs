@@ -21,8 +21,8 @@ mod helpers;
 /// * `interval` - Optional. Defaults to `0`. The number of period events that should elapse between transmissions of the data. `0` means the data is transmitted every Period, `1` means that the data is transmitted every other Period, etc.
 ///
 /// # Field Arguments
-/// * `name` - Required. The name of the field. One from <http://www.prepar3d.com/SDKv3/LearningCenter/utilities/variables/simulation_variables.html#Simulation%20Variables>.
-/// * `unit` - Optional. The unit of the field. For `string`s and `bool`s it should be left out or be empty string. For numeric fields it should be one from <http://www.prepar3d.com/SDKv3/LearningCenter/utilities/variables/simulation_variables.html#Simulation%20Variables>.
+/// * `name` - Required. The name of the field. One from <https://www.prepar3d.com/SDKv5/sdk/references/variables/simulation_variables.html>.
+/// * `unit` - Optional. The unit of the field. For `string`s and `bool`s it should be left out or be empty string. For numeric fields it should be one from <https://www.prepar3d.com/SDKv5/sdk/references/variables/simulation_variables.html>.
 ///
 /// # Example
 ///

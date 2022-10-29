@@ -27,6 +27,10 @@ path = "src/data_multiple_objects.rs"
 name = "facilities"
 path = "src/facilities.rs"
 
+[[bin]]
+name = "system_events"
+path = "src/system_events.rs"
+
 [dependencies]
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }

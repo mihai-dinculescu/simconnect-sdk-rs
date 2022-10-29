@@ -1,8 +1,10 @@
 macro_rules! success {
     ($hr:expr) => {{
         let hr = $hr;
-        if hr != 0 {
-            return Err(SimConnectError::SimConnectError(hr));
+        if hr == 0 {
+            Ok(())
+        } else {
+            Err(SimConnectError::SimConnectError(hr))
         }
     }};
 }

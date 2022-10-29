@@ -2,27 +2,27 @@
 
 ## General
 
-| Feature                                 | Status  | Comment     |
-| --------------------------------------- | ------- | ----------- |
-| DispatchProc                            |         |             |
-| SimConnect_Open                         | &check; |             |
-| SimConnect_Close                        | &check; |             |
-| SimConnect_CallDispatch                 |         |             |
-| SimConnect_GetNextDispatch              | &check; |             |
-| SimConnect_RequestSystemState           |         |             |
-| SimConnect_MapClientEventToSimEvent     | -       | Coming soon |
-| SimConnect_SubscribeToSystemEvent       |         |             |
-| SimConnect_SetSystemEventState          |         |             |
-| SimConnect_UnsubscribeFromSystemEvent   |         |             |
-| SimConnect_SetNotificationGroupPriority | -       | Coming soon |
+| Feature                                 | Status  | Comment |
+| --------------------------------------- | ------- | ------- |
+| DispatchProc                            |         |         |
+| SimConnect_Open                         | &check; |         |
+| SimConnect_Close                        | &check; |         |
+| SimConnect_CallDispatch                 |         |         |
+| SimConnect_GetNextDispatch              | &check; |         |
+| SimConnect_RequestSystemState           |         |         |
+| SimConnect_MapClientEventToSimEvent     | -       | WIP     |
+| SimConnect_SubscribeToSystemEvent       | &check; |         |
+| SimConnect_SetSystemEventState          |         |         |
+| SimConnect_UnsubscribeFromSystemEvent   | &check; |         |
+| SimConnect_SetNotificationGroupPriority | -       | WIP     |
 
 ## Events And Data
 
 | Feature                                      | Status  | Comment                             |
 | -------------------------------------------- | ------- | ----------------------------------- |
 | SimConnect_RequestDataOnSimObject            | &check; | Only for SIMCONNECT_OBJECT_ID_USER  |
-| SimConnect_RequestDataOnSimObjectType        | -       | Coming soon                         |
-| SimConnect_AddClientEventToNotificationGroup | -       | Coming soon                         |
+| SimConnect_RequestDataOnSimObjectType        |         |                                     |
+| SimConnect_AddClientEventToNotificationGroup | -       | WIP                                 |
 | SimConnect_RemoveClientEvent                 |         |                                     |
 | SimConnect_TransmitClientEvent               |         |                                     |
 | SimConnect_TransmitClientEvent_EX1           |         |                                     |

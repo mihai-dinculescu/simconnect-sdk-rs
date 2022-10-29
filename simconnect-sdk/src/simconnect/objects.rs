@@ -26,12 +26,9 @@ impl SimConnect {
             .get(&type_name)
             .ok_or_else(|| SimConnectError::ObjectNotRegistered(type_name.clone()))?;
 
-        unsafe {
-            success!(bindings::SimConnect_ClearDataDefinition(
-                self.handle.as_ptr(),
-                *request_id,
-            ));
-        }
+        success!(unsafe {
+            bindings::SimConnect_ClearDataDefinition(self.handle.as_ptr(), *request_id)
+        })?;
 
         self.unregister_request_id_by_type_name(&type_name)
             .ok_or(SimConnectError::ObjectNotRegistered(type_name))
@@ -59,8 +56,8 @@ impl SimConnect {
             DataType::String => bindings::SIMCONNECT_DATATYPE_SIMCONNECT_DATATYPE_STRING256,
         };
 
-        unsafe {
-            success!(bindings::SimConnect_AddToDataDefinition(
+        success!(unsafe {
+            bindings::SimConnect_AddToDataDefinition(
                 self.handle.as_ptr(),
                 request_id,
                 as_c_string!(name),
@@ -68,10 +65,8 @@ impl SimConnect {
                 c_type,
                 0.0,
                 u32::MAX,
-            ));
-        }
-
-        Ok(())
+            )
+        })
     }
 
     /// Request when the SimConnect client is to receive data values for a specific object.
@@ -100,8 +95,8 @@ impl SimConnect {
         condition: Condition,
         interval: u32,
     ) -> Result<(), SimConnectError> {
-        unsafe {
-            success!(bindings::SimConnect_RequestDataOnSimObject(
+        success!(unsafe {
+            bindings::SimConnect_RequestDataOnSimObject(
                 self.handle.as_ptr(),
                 request_id,
                 request_id,
@@ -111,9 +106,7 @@ impl SimConnect {
                 0,
                 interval,
                 0,
-            ));
-        }
-
-        Ok(())
+            )
+        })
     }
 }

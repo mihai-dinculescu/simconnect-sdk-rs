@@ -44,3 +44,9 @@ cargo run --bin data_multiple_objects
 ```bash
 cargo run --bin facilities
 ```
+
+## Receiving system events
+
+```bash
+cargo run --bin system_events
+```

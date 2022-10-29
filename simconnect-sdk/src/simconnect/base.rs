@@ -3,8 +3,9 @@ use std::{collections::HashMap, ffi::c_void};
 use tracing::{error, span, trace, warn, Level};
 
 use crate::{
-    as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, Airport, Event,
-    Notification, Object, SimConnectError, Waypoint, NDB, VOR,
+    as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, Airport,
+    ClientEvent, Notification, Object, SimConnectError, SystemEvent, Waypoint, CLIENT_EVENT_START,
+    NDB, VOR,
 };
 
 /// SimConnect SDK Client.
@@ -102,7 +103,7 @@ impl SimConnect {
                 std::ptr::null_mut(),
                 0,
             )
-        });
+        })?;
 
         Ok(Self {
             handle: std::ptr::NonNull::new(handle).ok_or_else(|| {
@@ -158,10 +159,32 @@ impl SimConnect {
                     let event: &bindings::SIMCONNECT_RECV_EVENT =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
 
-                    let event = Event::try_from(event.uEventID)
-                        .map_err(|_| SimConnectError::UnimplementedEventType(event.uEventID))?;
+                    if event.uEventID >= CLIENT_EVENT_START {
+                        let event = ClientEvent::try_from(event.uEventID)
+                            .map_err(|_| SimConnectError::UnimplementedEventType(event.uEventID))?;
 
-                    Ok(Some(Notification::Event(event)))
+                        Ok(Some(Notification::ClientEvent(event)))
+                    } else {
+                        let event = SystemEvent::try_from(event)?;
+
+                        Ok(Some(Notification::SystemEvent(event)))
+                    }
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EVENT_FILENAME => {
+                    trace!("Received SIMCONNECT_RECV_EVENT_FILENAME");
+                    let event: &bindings::SIMCONNECT_RECV_EVENT_FILENAME =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT_FILENAME) };
+
+                    let event = SystemEvent::try_from(event)?;
+                    Ok(Some(Notification::SystemEvent(event)))
+                }
+                bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_EVENT_FRAME => {
+                    trace!("Received SIMCONNECT_RECV_EVENT_FRAME");
+                    let event: &bindings::SIMCONNECT_RECV_EVENT_FRAME =
+                        unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT_FRAME) };
+
+                    let event = SystemEvent::try_from(event)?;
+                    Ok(Some(Notification::SystemEvent(event)))
                 }
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_SIMOBJECT_DATA => {
                     trace!("Received SIMCONNECT_RECV_SIMOBJECT_DATA");

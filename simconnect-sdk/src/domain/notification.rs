@@ -1,4 +1,6 @@
-use crate::{Airport, Event, SimConnectError, SimConnectObjectExt, Waypoint, NDB, VOR};
+use crate::{
+    Airport, ClientEvent, SimConnectError, SimConnectObjectExt, SystemEvent, Waypoint, NDB, VOR,
+};
 
 /// Notification received from SimConnect.
 #[derive(Debug)]
@@ -6,8 +8,10 @@ use crate::{Airport, Event, SimConnectError, SimConnectObjectExt, Waypoint, NDB,
 pub enum Notification {
     /// SimConnect open
     Open,
-    /// SimConnect event
-    Event(Event),
+    /// SimConnect client event
+    ClientEvent(ClientEvent),
+    /// SimConnect system event
+    SystemEvent(SystemEvent),
     /// SimConnect object
     Object(Object),
     /// A list of [crate::Airport].
