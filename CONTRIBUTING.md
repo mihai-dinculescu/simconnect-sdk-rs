@@ -26,6 +26,6 @@ If you're thinking to create a PR with large feature/change, please first discus
   Create a [new release][releases]. \
   The `publish.yml` GitHub Action will pick it up and do the actual release to [crates.io][crates_io].
 
-[issues]: https://github.com/mihai-dinculescu/simconnect-sdk/issues
-[releases]: https://github.com/mihai-dinculescu/simconnect-sdk/releases
+[issues]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/issues
+[releases]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/releases
 [crates_io]: https://crates.io

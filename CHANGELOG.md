@@ -6,6 +6,10 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Changed
+
+- The GitHub repository has been renamed from `mihai-dinculescu/simconnect-sdk` to `mihai-dinculescu/simconnect-sdk-rs`.
+
 ## [v0.2.0] - 2022-10-29
 
 ### Added
@@ -51,10 +55,10 @@ file. This change log follows the conventions of
 
 ### Initial Release of simconnect-sdk
 
-[unreleased]: https://github.com/mihai-dinculescu/simconnect-sdk
-[v0.2.0]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.2.0
-[v0.1.3]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.3
-[v0.1.2]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.2
-[v0.1.1]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.1
-[v0.1.0]: https://github.com/mihai-dinculescu/simconnect-sdk/tree/v0.1.0
+[unreleased]: https://github.com/mihai-dinculescu/simconnect-sdk-rs
+[v0.2.0]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.0
+[v0.1.3]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.1.3
+[v0.1.2]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.1.2
+[v0.1.1]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.1.1
+[v0.1.0]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.1.0
 [keepachangelog]: https://keepachangelog.com

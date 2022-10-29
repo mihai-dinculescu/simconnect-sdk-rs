@@ -8,7 +8,7 @@ description = "SimConnect SDK. An opinionated SimConnect Client that encapsulate
 keywords = ["simconnect", "MSFS-2020", "simulation", "aerospace"]
 categories = ["aerospace", "simulation", "aerospace::simulation", "games"]
 readme = "README.md"
-repository = "https://github.com/mihai-dinculescu/simconnect-sdk"
+repository = "https://github.com/mihai-dinculescu/simconnect-sdk-rs"
 include = ["src/**", "ffi/**/*", "build.rs", "LICENSE", "README.md"]
 
 [features]

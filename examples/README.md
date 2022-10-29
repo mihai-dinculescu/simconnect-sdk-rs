@@ -3,8 +3,8 @@
 ## Checkout the repository
 
 ```bash
-git clone git@github.com:mihai-dinculescu/simconnect-sdk.git
-cd simconnect-sdk
+git clone git@github.com:mihai-dinculescu/simconnect-sdk-rs.git
+cd simconnect-sdk-rs
 ```
 
 ## Receiving data

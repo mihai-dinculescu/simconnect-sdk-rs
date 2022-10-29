@@ -77,7 +77,7 @@
 //! }
 //! ```
 //!
-//! See [more examples](https://github.com/mihai-dinculescu/simconnect-sdk/tree/main/examples).
+//! See [more examples](https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/main/examples).
 
 mod bindings;
 mod domain;

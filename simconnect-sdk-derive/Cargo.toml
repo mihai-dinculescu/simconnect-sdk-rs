@@ -8,7 +8,7 @@ description = "Macros implementation for SimConnect SDK. An opinionated SimConne
 keywords = ["simconnect", "MSFS-2020", "simulation", "aerospace"]
 categories = ["aerospace", "simulation", "aerospace::simulation", "games"]
 readme = "README.md"
-repository = "https://github.com/mihai-dinculescu/simconnect-sdk"
+repository = "https://github.com/mihai-dinculescu/simconnect-sdk-rs"
 include = ["src/**", "LICENSE", "README.md"]
 autotests = false
 
