@@ -16,7 +16,7 @@ default = []
 derive = ["simconnect-sdk-derive"]
 
 [build-dependencies]
-bindgen = "0.61"
+bindgen = "0.62"
 
 [dependencies]
 num_enum = "0.5"
