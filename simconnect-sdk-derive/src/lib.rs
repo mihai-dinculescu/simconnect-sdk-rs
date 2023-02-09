@@ -51,7 +51,7 @@ pub fn derive(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     let name_ident = &ast.ident;
-    let packed_ident = syn::Ident::new(&format!("{}CPacked", name_ident), name_ident.span());
+    let packed_ident = syn::Ident::new(&format!("{name_ident}CPacked"), name_ident.span());
 
     let fields = if let syn::Data::Struct(syn::DataStruct {
         fields: syn::Fields::Named(syn::FieldsNamed { ref named, .. }),
