@@ -14,10 +14,10 @@
 #if _MSC_FULL_VER >= 140040130
 #if defined(_M_IX86) || defined(_M_X64)
 //#pragma comment(linker,"/manifestdependency:\"type='win32' " \
-//    "name='" "Microsoft..SimConnect" "' " \
+//    "name='" "Microsoft.FlightSimulator.SimConnect" "' " \
 //    "version='" "" "' " \
 //    "processorArchitecture='amd64' " \
-//    "publicKeyToken='" "" "'\"")
+//    "publicKeyToken='" "dd3546d27f3ecf37" "'\"")
 #endif // #if defined(_M_IX86) || defined(_M_X64)
 #endif // #if _MSC_FULL_VER >= 140040130
 #endif // #ifndef SIMCONNECT_H_NOMANIFEST
@@ -126,6 +126,7 @@ SIMCONNECT_ENUM SIMCONNECT_RECV_ID{
     SIMCONNECT_RECV_ID_EVENT_EX1,
     SIMCONNECT_RECV_ID_FACILITY_DATA,
     SIMCONNECT_RECV_ID_FACILITY_DATA_END,
+    SIMCONNECT_RECV_ID_FACILITY_MINIMAL_LIST,
 };
 
 // Data data types
@@ -589,6 +590,14 @@ SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_FACILITIES_LIST : public SIMCONNECT_RECV
     DWORD dwOutOf;       // total number of transmissions the list is chopped into
 };
 
+SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_LIST_TEMPLATE : public SIMCONNECT_RECV
+{
+    DWORD dwRequestID;
+    DWORD dwArraySize;
+    DWORD dwEntryNumber; // when the array of items is too big for one send, which send this is (0..dwOutOf-1)
+    DWORD dwOutOf;       // total number of transmissions the list is chopped into
+};
+
 // SIMCONNECT_DATA_FACILITY_AIRPORT
 SIMCONNECT_REFSTRUCT SIMCONNECT_DATA_FACILITY_AIRPORT
 {
@@ -662,6 +671,33 @@ SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_FACILITY_DATA_END : public SIMCONNECT_RECV
     DWORD RequestId;
 };
 
+SIMCONNECT_REFSTRUCT SIMCONNECT_ICAO
+{
+    char Type;
+    SIMCONNECT_STRING(Ident, 5 + 1);
+    SIMCONNECT_STRING(Region, 2 + 1);
+    SIMCONNECT_STRING(Airport, 4 + 1);
+};
+
+// SIMCONNECT_DATA_LATLONALT
+SIMCONNECT_STRUCT SIMCONNECT_DATA_LATLONALT
+{
+    double Latitude;
+    double Longitude;
+    double Altitude;
+};
+
+SIMCONNECT_REFSTRUCT SIMCONNECT_FACILITY_MINIMAL
+{
+    SIMCONNECT_ICAO icao;
+    SIMCONNECT_DATA_LATLONALT lla;
+};
+
+SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_FACILITY_MINIMAL_LIST : public SIMCONNECT_RECV_LIST_TEMPLATE
+{
+    SIMCONNECT_FIXEDTYPE_DATAV(SIMCONNECT_FACILITY_MINIMAL, rgData, dwArraySize, U1 /*member of UnmanagedType enum*/, SIMCONNECT_FACILITY_MINIMAL /*cli type*/);
+};
+
 #ifdef ENABLE_SIMCONNECT_EXPERIMENTAL
 
 SIMCONNECT_REFSTRUCT SIMCONNECT_RECV_PICK : public SIMCONNECT_RECV // when dwID == SIMCONNECT_RECV_ID_RESERVED_KEY
@@ -710,14 +746,6 @@ SIMCONNECT_STRUCT SIMCONNECT_DATA_WAYPOINT
     unsigned long Flags;
     double ktsSpeed; // knots
     double percentThrottle;
-};
-
-// SIMCONNECT_DATA_LATLONALT
-SIMCONNECT_STRUCT SIMCONNECT_DATA_LATLONALT
-{
-    double Latitude;
-    double Longitude;
-    double Altitude;
 };
 
 // SIMCONNECT_DATA_XYZ
@@ -818,5 +846,6 @@ SIMCONNECTAPI SimConnect_RequestFacilityData(HANDLE hSimConnect, SIMCONNECT_DATA
 SIMCONNECTAPI SimConnect_SubscribeToFacilities_EX1(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID newElemInRangeRequestID, SIMCONNECT_DATA_REQUEST_ID oldElemOutRangeRequestID);
 SIMCONNECTAPI SimConnect_UnsubscribeToFacilities_EX1(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, bool bUnsubscribeNewInRange, bool bUnsubscribeOldOutRange);
 SIMCONNECTAPI SimConnect_RequestFacilitiesList_EX1(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_RequestFacilityData_EX1(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *ICAO, const char *Region = "", char Type = 0);
 
 #endif // _SIMCONNECT_H_

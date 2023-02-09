@@ -6,6 +6,9 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Changed
+- Updated to MSFS SDK v0.20.5.0.
+
 ## [v0.2.1] - 2022-10-29
 
 ### Added
