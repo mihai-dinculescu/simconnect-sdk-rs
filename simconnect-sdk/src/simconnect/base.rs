@@ -85,7 +85,20 @@ use crate::{
 pub struct SimConnect {
     pub(super) handle: std::ptr::NonNull<c_void>,
     pub(super) next_request_id: u32,
-    pub(super) registered_objects: HashMap<String, u32>,
+    pub(super) registered_objects: HashMap<String, RegisteredObject>,
+}
+
+/// A struct that represents a registered object.
+#[derive(Debug)]
+pub(super) struct RegisteredObject {
+    pub id: u32,
+    pub transient: bool,
+}
+
+impl RegisteredObject {
+    pub(super) fn new(id: u32, transient: bool) -> Self {
+        Self { id, transient }
+    }
 }
 
 impl SimConnect {
@@ -121,7 +134,7 @@ impl SimConnect {
     /// # Remarks
     /// This is a non-blocking function. If there are no messages to receive, it will return None immediately.
     /// When called in a loop, it is recommended to use a short sleep time.
-    pub fn get_next_dispatch(&self) -> Result<Option<Notification>, SimConnectError> {
+    pub fn get_next_dispatch(&mut self) -> Result<Option<Notification>, SimConnectError> {
         let mut data_buf: *mut bindings::SIMCONNECT_RECV = std::ptr::null_mut();
         let mut size_buf: bindings::DWORD = 32;
         let size_buf_pointer: *mut bindings::DWORD = &mut size_buf;
@@ -212,6 +225,12 @@ impl SimConnect {
                     let event: &bindings::SIMCONNECT_RECV_AIRPORT_LIST =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_AIRPORT_LIST) };
 
+                    self.unregister_potential_transient_request(
+                        event._base.dwEntryNumber,
+                        event._base.dwOutOf,
+                        event._base.dwRequestID,
+                    );
+
                     let data = (0..event._base.dwArraySize as usize)
                         .map(|i| {
                             // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
@@ -233,6 +252,12 @@ impl SimConnect {
 
                     let event: &bindings::SIMCONNECT_RECV_WAYPOINT_LIST =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_WAYPOINT_LIST) };
+
+                    self.unregister_potential_transient_request(
+                        event._base.dwEntryNumber,
+                        event._base.dwOutOf,
+                        event._base.dwRequestID,
+                    );
 
                     let data = (0..event._base.dwArraySize as usize)
                         .map(|i| {
@@ -257,6 +282,12 @@ impl SimConnect {
                     let event: &bindings::SIMCONNECT_RECV_NDB_LIST =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_NDB_LIST) };
 
+                    self.unregister_potential_transient_request(
+                        event._base.dwEntryNumber,
+                        event._base.dwOutOf,
+                        event._base.dwRequestID,
+                    );
+
                     let data = (0..event._base.dwArraySize as usize)
                         .map(|i| {
                             // `rgData` is defined as a 1-element array, but it is actually a variable-length array.
@@ -280,6 +311,12 @@ impl SimConnect {
 
                     let event: &bindings::SIMCONNECT_RECV_VOR_LIST =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_VOR_LIST) };
+
+                    self.unregister_potential_transient_request(
+                        event._base.dwEntryNumber,
+                        event._base.dwOutOf,
+                        event._base.dwRequestID,
+                    );
 
                     let data = (0..event._base.dwArraySize as usize)
                         .map(|i| {
@@ -364,7 +401,11 @@ impl SimConnect {
 
     /// Register a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
     #[tracing::instrument(name = "SimConnect::new_request_id", level = "trace", skip(self))]
-    pub(super) fn new_request_id(&mut self, type_name: String) -> Result<u32, SimConnectError> {
+    pub(super) fn new_request_id(
+        &mut self,
+        type_name: String,
+        transient: bool,
+    ) -> Result<u32, SimConnectError> {
         if self.registered_objects.contains_key(&type_name) {
             return Err(SimConnectError::ObjectAlreadyRegistered(type_name));
         }
@@ -374,12 +415,17 @@ impl SimConnect {
 
         // when `next_request_id` overflows some ids might still be in use
         // so we need to find the next available one
-        while self.registered_objects.values().any(|id| *id == request_id) {
+        while self
+            .registered_objects
+            .values()
+            .any(|obj| obj.id == request_id)
+        {
             request_id = self.next_request_id;
             self.next_request_id += 1;
         }
 
-        self.registered_objects.insert(type_name, request_id);
+        self.registered_objects
+            .insert(type_name, RegisteredObject::new(request_id, transient));
 
         Ok(request_id)
     }
@@ -391,7 +437,7 @@ impl SimConnect {
         skip(self)
     )]
     pub(super) fn unregister_request_id_by_type_name(&mut self, type_name: &str) -> Option<u32> {
-        self.registered_objects.remove(type_name)
+        self.registered_objects.remove(type_name).map(|obj| obj.id)
     }
 
     /// Get the Type Name of a Request ID.
@@ -403,8 +449,50 @@ impl SimConnect {
     pub(super) fn get_type_name_by_request_id(&self, request_id: u32) -> Option<String> {
         self.registered_objects
             .iter()
-            .find(|(_, v)| **v == request_id)
+            .find(|(_, v)| v.id == request_id)
             .map(|(k, _)| k.clone())
+    }
+
+    /// Get the Type Name of a Request ID.
+    #[tracing::instrument(name = "SimConnect::is_transient_request", level = "trace", skip(self))]
+    pub(super) fn is_transient_request(&self, request_id: u32) -> Option<bool> {
+        self.registered_objects
+            .iter()
+            .find(|(_, v)| v.id == request_id)
+            .map(|(_, v)| v.transient)
+    }
+
+    /// Checks if the request is
+    /// 1) the last entry in the list and
+    /// 2) transient
+    /// and if yes, it gets unregistered.
+    #[tracing::instrument(
+        name = "SimConnect::unregister_potential_transient_request",
+        level = "trace",
+        fields(type_name, transient),
+        skip(self)
+    )]
+    pub(super) fn unregister_potential_transient_request(
+        &mut self,
+        entry_number: u32,
+        out_of: u32,
+        request_id: u32,
+    ) {
+        if entry_number + 1 >= out_of {
+            // This is the last entry, so we can clear the request if it's transient.
+            let transient = self.is_transient_request(request_id);
+            tracing::Span::current().record("transient", transient);
+            if self.is_transient_request(request_id) == Some(true) {
+                let type_name = self.get_type_name_by_request_id(request_id);
+
+                if let Some(ref type_name) = type_name {
+                    tracing::Span::current().record("type_name", type_name);
+
+                    trace!("Clearing");
+                    self.unregister_request_id_by_type_name(type_name);
+                }
+            }
+        }
     }
 }
 

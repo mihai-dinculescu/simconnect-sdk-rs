@@ -9,7 +9,7 @@ impl SimConnect {
     pub fn register_object<T: SimConnectObjectExt>(&mut self) -> Result<u32, SimConnectError> {
         let type_name: String = std::any::type_name::<T>().into();
 
-        let id = self.new_request_id(type_name)?;
+        let id = self.new_request_id(type_name, false)?;
 
         T::register(self, id)?;
 
@@ -27,7 +27,7 @@ impl SimConnect {
             .ok_or_else(|| SimConnectError::ObjectNotRegistered(type_name.clone()))?;
 
         success!(unsafe {
-            bindings::SimConnect_ClearDataDefinition(self.handle.as_ptr(), *request_id)
+            bindings::SimConnect_ClearDataDefinition(self.handle.as_ptr(), request_id.id)
         })?;
 
         self.unregister_request_id_by_type_name(&type_name)

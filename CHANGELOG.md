@@ -8,6 +8,10 @@ file. This change log follows the conventions of
 
 ### Changed
 - Updated to MSFS SDK v0.20.5.0.
+- `SimConnect::get_next_dispatch` now takes a `&mut self` in order to be able to clean up requests that have returned all the results they ever will.
+
+# Fixed
+- `SimConnect::request_facilities_list` calls now automatically clean up the request after all the data is received.
 
 ## [v0.2.1] - 2022-10-29
 

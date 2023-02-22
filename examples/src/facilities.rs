@@ -26,8 +26,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         // The returned list is quite large, so we look for a particular record
                         if record.icao == "EGSC" {
                             println!("{record:?}");
-                            // we've got the entry we're interesting in - we can unsubscribe now
-                            client.unsubscribe_to_facilities(FacilityType::Airport)?;
+                            // there's no need to unsubscribe
+                            // because this is a one-off request, not a subscription
                         }
                     }
                 }
