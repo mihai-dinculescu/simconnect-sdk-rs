@@ -6,11 +6,13 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+## [v0.2.2] - 2023-02-22
+
 ### Changed
 - Updated to MSFS SDK v0.20.5.0.
 - `SimConnect::get_next_dispatch` now takes a `&mut self` in order to be able to clean up requests that have returned all the results they ever will.
 
-# Fixed
+### Fixed
 - `SimConnect::request_facilities_list` calls now automatically clean up the request after all the data is received.
 
 ## [v0.2.1] - 2022-10-29
@@ -70,6 +72,7 @@ file. This change log follows the conventions of
 ### Initial Release of simconnect-sdk
 
 [unreleased]: https://github.com/mihai-dinculescu/simconnect-sdk-rs
+[v0.2.2]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.2
 [v0.2.1]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.1
 [v0.2.0]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.0
 [v0.1.3]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.1.3
