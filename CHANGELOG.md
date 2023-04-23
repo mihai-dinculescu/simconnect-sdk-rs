@@ -6,6 +6,11 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+### Added
+
+- `SimConnect_TransmitClientEvent` has been implemented.  Use `SimConnect::register_event` to set up the client event(s) prior to using the `SimConnect_TransmitClientEvent` call.
+- Added a few NAV/COM and Transponder related client events.
+
 ## [v0.2.2] - 2023-02-22
 
 ### Changed

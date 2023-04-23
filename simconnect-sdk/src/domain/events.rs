@@ -294,7 +294,8 @@ pub enum ClientEvent {
     Com3RadioStbySet,
     Com1RadioSwap,
     Com2RadioSwap,
-    Com3RadioSwap
+    Com3RadioSwap,
+    TransponderSet
 }
 
 impl ClientEvent {
@@ -312,6 +313,7 @@ impl ClientEvent {
             ClientEvent::Com1RadioSwap => "COM_RADIO_SWAP\0".as_ptr() as *const c_char,
             ClientEvent::Com2RadioSwap => "COM2_RADIO_SWAP\0".as_ptr() as *const c_char,
             ClientEvent::Com3RadioSwap => "COM3_RADIO_SWAP\0".as_ptr() as *const c_char,
+            ClientEvent::TransponderSet => "XPNDR_SET\0".as_ptr() as *const c_char
         }
     }
 }
