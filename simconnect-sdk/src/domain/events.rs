@@ -289,12 +289,23 @@ pub enum ClientEvent {
     BrakesLeft,
     /// Sets left brake position from axis controller (e.g. joystick). -16383 (0 brakes) to +16383 (max brakes).
     AxisLeftBrakeSet,
+    // Comm Radios
     Com1RadioStbySet,
     Com2RadioStbySet,
     Com3RadioStbySet,
     Com1RadioSwap,
     Com2RadioSwap,
     Com3RadioSwap,
+    // Nav Radios
+    Nav1RadioStbySet,
+    Nav2RadioStbySet,
+    Nav3RadioStbySet,
+    Nav4RadioStbySet,
+    Nav1RadioSwap,
+    Nav2RadioSwap,
+    Nav3RadioSwap,
+    Nav4RadioSwap,
+    // Transponder
     TransponderSet
 }
 
@@ -307,12 +318,23 @@ impl ClientEvent {
             ClientEvent::Brakes => "BRAKES\0".as_ptr() as *const c_char,
             ClientEvent::BrakesLeft => "BRAKES_LEFT\0".as_ptr() as *const c_char,
             ClientEvent::AxisLeftBrakeSet => "AXIS_LEFT_BRAKE_SET\0".as_ptr() as *const c_char,
+            // Comm Radios
             ClientEvent::Com1RadioStbySet => "COM_STBY_RADIO_SET_HZ\0".as_ptr() as *const c_char,
             ClientEvent::Com2RadioStbySet => "COM2_STBY_RADIO_SET_HZ\0".as_ptr() as *const c_char,
             ClientEvent::Com3RadioStbySet => "COM3_STBY_RADIO_SET_HZ\0".as_ptr() as *const c_char,
             ClientEvent::Com1RadioSwap => "COM_RADIO_SWAP\0".as_ptr() as *const c_char,
             ClientEvent::Com2RadioSwap => "COM2_RADIO_SWAP\0".as_ptr() as *const c_char,
             ClientEvent::Com3RadioSwap => "COM3_RADIO_SWAP\0".as_ptr() as *const c_char,
+            // Nav Radios
+            ClientEvent::Nav1RadioStbySet => "NAV1_STBY_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Nav2RadioStbySet => "NAV2_STBY_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Nav3RadioStbySet => "NAV3_STBY_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Nav4RadioStbySet => "NAV4_STBY_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Nav1RadioSwap => "NAV1_RADIO_SWAP\0".as_ptr() as *const c_char,
+            ClientEvent::Nav2RadioSwap => "NAV2_RADIO_SWAP\0".as_ptr() as *const c_char,
+            ClientEvent::Nav3RadioSwap => "NAV3_RADIO_SWAP\0".as_ptr() as *const c_char,
+            ClientEvent::Nav4RadioSwap => "NAV4_RADIO_SWAP\0".as_ptr() as *const c_char,
+            // Transponder
             ClientEvent::TransponderSet => "XPNDR_SET\0".as_ptr() as *const c_char
         }
     }
