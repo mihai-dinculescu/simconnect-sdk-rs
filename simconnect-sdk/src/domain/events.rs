@@ -289,6 +289,12 @@ pub enum ClientEvent {
     BrakesLeft,
     /// Sets left brake position from axis controller (e.g. joystick). -16383 (0 brakes) to +16383 (max brakes).
     AxisLeftBrakeSet,
+    Com1RadioStbySet,
+    Com2RadioStbySet,
+    Com3RadioStbySet,
+    Com1RadioSwap,
+    Com2RadioSwap,
+    Com3RadioSwap
 }
 
 impl ClientEvent {
@@ -300,6 +306,24 @@ impl ClientEvent {
             ClientEvent::Brakes => "BRAKES\0".as_ptr() as *const c_char,
             ClientEvent::BrakesLeft => "BRAKES_LEFT\0".as_ptr() as *const c_char,
             ClientEvent::AxisLeftBrakeSet => "AXIS_LEFT_BRAKE_SET\0".as_ptr() as *const c_char,
+            ClientEvent::Com1RadioStbySet => "COM_STBY_RADIO_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Com2RadioStbySet => "COM2_STBY_RADIO_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Com3RadioStbySet => "COM3_STBY_RADIO_SET_HZ\0".as_ptr() as *const c_char,
+            ClientEvent::Com1RadioSwap => "COM_RADIO_SWAP\0".as_ptr() as *const c_char,
+            ClientEvent::Com2RadioSwap => "COM2_RADIO_SWAP\0".as_ptr() as *const c_char,
+            ClientEvent::Com3RadioSwap => "COM3_RADIO_SWAP\0".as_ptr() as *const c_char,
         }
     }
+}
+
+/// SimConnect Event Flags for TransmitClientEvent
+/// 
+/// https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_TransmitClientEvent.htm
+#[derive(Debug, Copy, Clone, PartialEq, Eq, num_enum::TryFromPrimitive)]
+#[repr(u32)]
+pub enum EventFlag {
+    DoNothing,
+    SlowRepeatTimer,
+    FastRepeatTimer,
+    GroupIdIsPriority
 }

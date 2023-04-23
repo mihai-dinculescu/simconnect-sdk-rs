@@ -36,6 +36,7 @@ fn main() {
         .allowlist_function("SimConnect_SubscribeToSystemEvent")
         .allowlist_function("SimConnect_UnsubscribeFromSystemEvent")
         .allowlist_function("SimConnect_UnsubscribeToFacilities")
+        .allowlist_function("SimConnect_TransmitClientEvent")
         .allowlist_type("SIMCONNECT_CLIENT_DATA_PERIOD")
         .allowlist_type("SIMCONNECT_EXCEPTION")
         .allowlist_type("SIMCONNECT_RECV_AIRPORT_LIST")
