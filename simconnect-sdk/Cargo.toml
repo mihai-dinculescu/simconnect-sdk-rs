@@ -16,10 +16,10 @@ default = []
 derive = ["simconnect-sdk-derive"]
 
 [build-dependencies]
-bindgen = "0.64"
+bindgen = "0.65"
 
 [dependencies]
-num_enum = "0.5"
+num_enum = "0.6"
 tracing = "0.1"
 thiserror = "1.0"
 simconnect-sdk-derive = { version = "=0.2.2", path = "../simconnect-sdk-derive", optional = true }
