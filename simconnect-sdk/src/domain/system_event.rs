@@ -268,38 +268,3 @@ impl TryFrom<&bindings::SIMCONNECT_RECV_EVENT_FRAME> for SystemEvent {
         }
     }
 }
-
-pub(crate) const CLIENT_EVENT_START: u32 = 128;
-
-/// SimConnect Client Event.
-///
-/// WIP. As defined by <https://www.prepar3d.com/SDKv5/sdk/references/variables/event_ids.html>.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, num_enum::TryFromPrimitive)]
-#[repr(u32)]
-#[non_exhaustive]
-pub enum ClientEvent {
-    // Aircraft Engine
-    /// Set throttles max.
-    ThrottleFull = CLIENT_EVENT_START,
-    // ---------------
-    // Aircraft Miscellaneous Systems
-    /// Increment brake pressure. Note: These are simulated spring-loaded toe brakes, which will bleed back to zero over time.
-    Brakes,
-    /// Increments left brake pressure. Note: This is a simulated spring-loaded toe brake, which will bleed back to zero over time.
-    BrakesLeft,
-    /// Sets left brake position from axis controller (e.g. joystick). -16383 (0 brakes) to +16383 (max brakes).
-    AxisLeftBrakeSet,
-}
-
-impl ClientEvent {
-    pub(crate) fn into_c_char(self) -> *const c_char {
-        match self {
-            // Aircraft Engine
-            ClientEvent::ThrottleFull => "THROTTLE_FULL\0".as_ptr() as *const c_char,
-            // Aircraft Miscellaneous Systems
-            ClientEvent::Brakes => "BRAKES\0".as_ptr() as *const c_char,
-            ClientEvent::BrakesLeft => "BRAKES_LEFT\0".as_ptr() as *const c_char,
-            ClientEvent::AxisLeftBrakeSet => "AXIS_LEFT_BRAKE_SET\0".as_ptr() as *const c_char,
-        }
-    }
-}

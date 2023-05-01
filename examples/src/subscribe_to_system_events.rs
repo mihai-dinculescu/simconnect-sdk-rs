@@ -1,7 +1,7 @@
 use simconnect_sdk::{Notification, SimConnect, SystemEvent, SystemEventRequest};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = SimConnect::new("System events example");
+    let client = SimConnect::new("System Events example");
 
     match client {
         Ok(mut client) => loop {

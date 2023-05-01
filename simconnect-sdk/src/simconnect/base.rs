@@ -2,11 +2,13 @@ use std::{collections::HashMap, ffi::c_void};
 
 use tracing::{error, span, trace, warn, Level};
 
-use crate::{
-    as_c_string, bindings, helpers::fixed_c_str_to_string, ok_if_fail, success, Airport,
-    ClientEvent, Notification, Object, SimConnectError, SystemEvent, Waypoint, CLIENT_EVENT_START,
-    NDB, VOR,
+use crate::domain::{
+    Airport, ClientEvent, ClientEventRequest, Notification, Object, SystemEvent,
+    SystemEventRequest, Waypoint, CLIENT_EVENT_DISCRIMINANT_START, NDB, VOR,
 };
+use crate::helpers::fixed_c_str_to_string;
+use crate::simconnect::EventRegister;
+use crate::{as_c_string, bindings, ok_if_fail, success, SimConnectError};
 
 /// SimConnect SDK Client.
 ///
@@ -83,20 +85,22 @@ use crate::{
 /// ```
 #[derive(Debug)]
 pub struct SimConnect {
-    pub(super) handle: std::ptr::NonNull<c_void>,
-    pub(super) next_request_id: u32,
-    pub(super) registered_objects: HashMap<String, RegisteredObject>,
+    pub(crate) handle: std::ptr::NonNull<c_void>,
+    pub(crate) next_request_id: u32,
+    pub(crate) registered_objects: HashMap<String, RegisteredObject>,
+    pub(crate) system_event_register: EventRegister<SystemEventRequest>,
+    pub(crate) client_event_register: EventRegister<ClientEventRequest>,
 }
 
 /// A struct that represents a registered object.
 #[derive(Debug)]
-pub(super) struct RegisteredObject {
+pub(crate) struct RegisteredObject {
     pub id: u32,
     pub transient: bool,
 }
 
 impl RegisteredObject {
-    pub(super) fn new(id: u32, transient: bool) -> Self {
+    pub(crate) fn new(id: u32, transient: bool) -> Self {
         Self { id, transient }
     }
 }
@@ -126,6 +130,8 @@ impl SimConnect {
             })?,
             next_request_id: 0,
             registered_objects: HashMap::new(),
+            system_event_register: EventRegister::new(),
+            client_event_register: EventRegister::new(),
         })
     }
 
@@ -172,9 +178,8 @@ impl SimConnect {
                     let event: &bindings::SIMCONNECT_RECV_EVENT =
                         unsafe { &*(data_buf as *const bindings::SIMCONNECT_RECV_EVENT) };
 
-                    if event.uEventID >= CLIENT_EVENT_START {
-                        let event = ClientEvent::try_from(event.uEventID)
-                            .map_err(|_| SimConnectError::UnimplementedEventType(event.uEventID))?;
+                    if event.uEventID >= CLIENT_EVENT_DISCRIMINANT_START {
+                        let event = ClientEvent::try_from(event)?;
 
                         Ok(Some(Notification::ClientEvent(event)))
                     } else {
@@ -393,7 +398,7 @@ impl SimConnect {
                 bindings::SIMCONNECT_RECV_ID_SIMCONNECT_RECV_ID_NULL => Ok(None),
                 id => {
                     error!("Received unhandled notification ID: {}", id);
-                    Err(SimConnectError::UnimplementedMessageType(id))
+                    Err(SimConnectError::UnimplementedNotification(id))
                 }
             }
         }
@@ -401,7 +406,7 @@ impl SimConnect {
 
     /// Register a Request ID in the internal state so that the user doesn't have to manually manage Request IDs.
     #[tracing::instrument(name = "SimConnect::new_request_id", level = "trace", skip(self))]
-    pub(super) fn new_request_id(
+    pub(crate) fn new_request_id(
         &mut self,
         type_name: String,
         transient: bool,
@@ -436,7 +441,7 @@ impl SimConnect {
         level = "trace",
         skip(self)
     )]
-    pub(super) fn unregister_request_id_by_type_name(&mut self, type_name: &str) -> Option<u32> {
+    pub(crate) fn unregister_request_id_by_type_name(&mut self, type_name: &str) -> Option<u32> {
         self.registered_objects.remove(type_name).map(|obj| obj.id)
     }
 
@@ -446,7 +451,7 @@ impl SimConnect {
         level = "trace",
         skip(self)
     )]
-    pub(super) fn get_type_name_by_request_id(&self, request_id: u32) -> Option<String> {
+    pub(crate) fn get_type_name_by_request_id(&self, request_id: u32) -> Option<String> {
         self.registered_objects
             .iter()
             .find(|(_, v)| v.id == request_id)
@@ -455,7 +460,7 @@ impl SimConnect {
 
     /// Get the Type Name of a Request ID.
     #[tracing::instrument(name = "SimConnect::is_transient_request", level = "trace", skip(self))]
-    pub(super) fn is_transient_request(&self, request_id: u32) -> Option<bool> {
+    pub(crate) fn is_transient_request(&self, request_id: u32) -> Option<bool> {
         self.registered_objects
             .iter()
             .find(|(_, v)| v.id == request_id)
@@ -472,7 +477,7 @@ impl SimConnect {
         fields(type_name, transient),
         skip(self)
     )]
-    pub(super) fn unregister_potential_transient_request(
+    pub(crate) fn unregister_potential_transient_request(
         &mut self,
         entry_number: u32,
         out_of: u32,
