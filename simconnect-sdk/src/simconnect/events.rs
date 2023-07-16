@@ -1,5 +1,5 @@
 use crate::{
-    bindings, success, ClientEvent, EventFlag, SimConnect, SimConnectError, SystemEventRequest, ClientEventRequest
+    bindings, success, EventFlag, SimConnect, SimConnectError, SystemEventRequest, ClientEventRequest
 };
 
 // In order to simplify the usage we're using a single notification group for all client events.
