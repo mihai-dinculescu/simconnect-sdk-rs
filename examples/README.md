@@ -45,8 +45,14 @@ cargo run --bin data_multiple_objects
 cargo run --bin facilities
 ```
 
-## Receiving system events
+## Subscribe to client events
 
 ```bash
-cargo run --bin system_events
+cargo run --bin subscribe_to_client_events
+```
+
+## Subscribe to system events
+
+```bash
+cargo run --bin subscribe_to_system_events
 ```

@@ -2,47 +2,47 @@
 
 ## General
 
-| Feature                                 | Status  | Comment |
-| --------------------------------------- | ------- | ------- |
-| DispatchProc                            |         |         |
-| SimConnect_Open                         | &check; |         |
-| SimConnect_Close                        | &check; |         |
-| SimConnect_CallDispatch                 |         |         |
-| SimConnect_GetNextDispatch              | &check; |         |
-| SimConnect_RequestSystemState           |         |         |
-| SimConnect_MapClientEventToSimEvent     | -       | WIP     |
-| SimConnect_SubscribeToSystemEvent       | &check; |         |
-| SimConnect_SetSystemEventState          |         |         |
-| SimConnect_UnsubscribeFromSystemEvent   | &check; |         |
-| SimConnect_SetNotificationGroupPriority | -       | WIP     |
+| Feature                                 | Status  | Comment                                      |
+| --------------------------------------- | ------- | -------------------------------------------- |
+| DispatchProc                            |         |                                              |
+| SimConnect_Open                         | &check; |                                              |
+| SimConnect_Close                        | &check; |                                              |
+| SimConnect_CallDispatch                 |         |                                              |
+| SimConnect_GetNextDispatch              | &check; |                                              |
+| SimConnect_RequestSystemState           |         |                                              |
+| SimConnect_MapClientEventToSimEvent     | &check; | Encapsulated by `subscribe_to_client_event`. |
+| SimConnect_SubscribeToSystemEvent       | &check; |                                              |
+| SimConnect_SetSystemEventState          |         |                                              |
+| SimConnect_UnsubscribeFromSystemEvent   | &check; |                                              |
+| SimConnect_SetNotificationGroupPriority | &check; | Encapsulated by `subscribe_to_client_event`. |
 
 ## Events And Data
 
-| Feature                                      | Status  | Comment                             |
-| -------------------------------------------- | ------- | ----------------------------------- |
-| SimConnect_RequestDataOnSimObject            | &check; | Only for SIMCONNECT_OBJECT_ID_USER  |
-| SimConnect_RequestDataOnSimObjectType        |         |                                     |
-| SimConnect_AddClientEventToNotificationGroup | -       | WIP                                 |
-| SimConnect_RemoveClientEvent                 |         |                                     |
-| SimConnect_TransmitClientEvent               |         |                                     |
-| SimConnect_TransmitClientEvent_EX1           |         |                                     |
-| SimConnect_MapClientDataNameToID             |         |                                     |
-| SimConnect_RequestClientData                 |         |                                     |
-| SimConnect_CreateClientData                  |         |                                     |
-| SimConnect_AddToClientDataDefinition         |         |                                     |
-| SimConnect_AddToDataDefinition               | &check; | Supports `f64`, `bool` and `String` |
-| SimConnect_SetClientData                     |         |                                     |
-| SimConnect_SetDataOnSimObject                |         |                                     |
-| SimConnect_ClearClientDataDefinition         |         |                                     |
-| SimConnect_ClearDataDefinition               | &check; |                                     |
-| SimConnect_MapInputEventToClientEvent        |         |                                     |
-| SimConnect_RequestNotificationGroup          |         |                                     |
-| SimConnect_ClearInputGroup                   |         |                                     |
-| SimConnect_ClearNotificationGroup            |         |                                     |
-| SimConnect_RequestReservedKey                |         |                                     |
-| SimConnect_SetInputGroupPriority             |         |                                     |
-| SimConnect_SetInputGroupState                |         |                                     |
-| SimConnect_RemoveInputEvent                  |         |                                     |
+| Feature                                      | Status  | Comment                                                                                            |
+| -------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------- |
+| SimConnect_RequestDataOnSimObject            | &check; | Only for `SIMCONNECT_OBJECT_ID_USER`.                                                              |
+| SimConnect_RequestDataOnSimObjectType        |         |                                                                                                    |
+| SimConnect_AddClientEventToNotificationGroup | &check; | Encapsulated by `subscribe_to_client_event`.                                                       |
+| SimConnect_RemoveClientEvent                 | &check; |                                                                                                    |
+| SimConnect_TransmitClientEvent               |         |                                                                                                    |
+| SimConnect_TransmitClientEvent_EX1           |         |                                                                                                    |
+| SimConnect_MapClientDataNameToID             |         |                                                                                                    |
+| SimConnect_RequestClientData                 |         |                                                                                                    |
+| SimConnect_CreateClientData                  |         |                                                                                                    |
+| SimConnect_AddToClientDataDefinition         |         |                                                                                                    |
+| SimConnect_AddToDataDefinition               | &check; | Encapsulated by `register_object` and the `simconnect` macro. Supports `f64`, `bool` and `String`. |
+| SimConnect_SetClientData                     |         |                                                                                                    |
+| SimConnect_SetDataOnSimObject                |         |                                                                                                    |
+| SimConnect_ClearClientDataDefinition         |         |                                                                                                    |
+| SimConnect_ClearDataDefinition               | &check; |                                                                                                    |
+| SimConnect_MapInputEventToClientEvent        |         |                                                                                                    |
+| SimConnect_RequestNotificationGroup          |         |                                                                                                    |
+| SimConnect_ClearInputGroup                   |         |                                                                                                    |
+| SimConnect_ClearNotificationGroup            | &check; | Implemented by `unsubscribe_from_all_client_events`.                                               |
+| SimConnect_RequestReservedKey                |         |                                                                                                    |
+| SimConnect_SetInputGroupPriority             |         |                                                                                                    |
+| SimConnect_SetInputGroupState                |         |                                                                                                    |
+| SimConnect_RemoveInputEvent                  |         |                                                                                                    |
 
 ## AI Objects
 

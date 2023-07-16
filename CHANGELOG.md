@@ -10,6 +10,20 @@ file. This change log follows the conventions of
 
 - `SimConnect_TransmitClientEvent` has been implemented.  Use `SimConnect::register_event` to set up the client event(s) prior to using the `SimConnect_TransmitClientEvent` call.
 - Added a few NAV/COM and Transponder related client events.
+- Client events are now implemented through `SimConnect::subscribe_to_client_event`, `SimConnect::unsubscribe_from_client_event` and `SimConnect::unsubscribe_from_all_client_events`.
+- `subscribe_to_client_events.rs` example has been added.
+- `SimConnectError::EventAlreadySubscribedTo` and `SimConnectError::EventNotSubscribedTo` error variants have been added.
+
+### Changed
+
+- A second call to `SimConnect::subscribe_to_system_event` for the same event will now return an error of type `SimConnectError::EventAlreadySubscribedTo` instead of `SimConnectError::SimConnectException`.
+- The call to `SimConnect::unsubscribe_from_system_event` is now a NOOP when the system event is not subscribed to.
+- `SimConnectError::UnimplementedMessageType` has been renamed to `SimConnectError::UnimplementedNotification`.
+
+### Removed
+
+- `SimConnect::register_event` has been replaced by the new client event functions.
+- `NotificationGroup` has been removed in favor of an internally managed notification group.
 
 ## [v0.2.2] - 2023-02-22
 

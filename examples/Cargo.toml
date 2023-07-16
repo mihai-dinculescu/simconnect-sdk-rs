@@ -30,8 +30,12 @@ name = "facilities"
 path = "src/facilities.rs"
 
 [[bin]]
-name = "system_events"
-path = "src/system_events.rs"
+name = "subscribe_to_client_events"
+path = "src/subscribe_to_client_events.rs"
+
+[[bin]]
+name = "subscribe_to_system_events"
+path = "src/subscribe_to_system_events.rs"
 
 [dependencies]
 tracing = "0.1"
