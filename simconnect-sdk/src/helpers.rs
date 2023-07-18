@@ -17,14 +17,12 @@ pub type BCD16 = u16;
 pub fn u16_to_bcd16(value: u16) -> u16 {
     let mut result: BCD16 = 0;
     let mut working_value = value;
-    let mut index = 0;
 
-    while index < 4 {
+    for index in 0..4 {
         let digit = working_value % 10;
         result = result | (digit << (index * 4));
-        index += 1;
 
-        if working_value > digit {
+        if working_value >= digit {
             working_value = (working_value - digit) / 10;
         } else {
             break;
@@ -37,13 +35,11 @@ pub fn u16_to_bcd16(value: u16) -> u16 {
 pub fn bcd16_to_u16(value: BCD16) -> u16 {
     let mut result: u16 = 0;
     let mut working_value = value;
-    let mut index = 0;
 
-    while index < 4 {
+    for index in 0..4 {
         let digit = working_value & 15;
         result += digit * (u16::pow(10, index));
         
-        index += 1;
         working_value = working_value >> 4;
     }
 
