@@ -1,6 +1,6 @@
 use std::os::raw::c_char;
 
-use crate::{bindings, SimConnectError, helpers::{BCD16, bcd16_to_u16, u16_to_bcd16}};
+use crate::{bindings, SimConnectError, helpers::{bcd16_to_u16, u16_to_bcd16}};
 
 // System Events start from 0 so we have to stagger the values to avoid collisions.
 pub(crate) const CLIENT_EVENT_DISCRIMINANT_START: u32 = 1024;
