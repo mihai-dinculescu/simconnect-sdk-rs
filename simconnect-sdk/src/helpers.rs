@@ -37,13 +37,14 @@ pub fn u16_to_bcd16(value: u16) -> u16 {
 pub fn bcd16_to_u16(value: BCD16) -> u16 {
     let mut result: u16 = 0;
     let mut working_value = value;
-    let mut index: i8 = 0;
+    let mut index = 0;
 
     while index < 4 {
         let digit = working_value & 15;
-        result += digit;
-        working_value = working_value >> (index * 4);
+        result += digit * (u16::pow(10, index));
+        
         index += 1;
+        working_value = working_value >> 4;
     }
 
     return result
