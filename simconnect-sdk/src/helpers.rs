@@ -39,9 +39,9 @@ pub fn bcd16_to_u16(value: BCD16) -> u16 {
     for index in 0..4 {
         let digit = working_value & 15;
         result += digit * (u16::pow(10, index));
-        
+
         working_value = working_value >> 4;
     }
 
-    return result
+    return result;
 }

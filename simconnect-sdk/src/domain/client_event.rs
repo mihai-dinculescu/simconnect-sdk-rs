@@ -1,6 +1,10 @@
 use std::os::raw::c_char;
 
-use crate::{bindings, SimConnectError, helpers::{bcd16_to_u16, u16_to_bcd16}};
+use crate::{
+    bindings,
+    helpers::{bcd16_to_u16, u16_to_bcd16},
+    SimConnectError,
+};
 
 // System Events start from 0 so we have to stagger the values to avoid collisions.
 pub(crate) const CLIENT_EVENT_DISCRIMINANT_START: u32 = 1024;
@@ -61,7 +65,7 @@ pub enum ClientEventRequest {
     Nav3RadioSwap,
     Nav4RadioSwap,
     // Transponder
-    TransponderSet
+    TransponderSet,
 }
 
 impl ClientEventRequest {
@@ -98,7 +102,7 @@ impl ClientEventRequest {
             Self::Nav3RadioSwap => "NAV3_RADIO_SWAP\0".as_ptr() as *const c_char,
             Self::Nav4RadioSwap => "NAV4_RADIO_SWAP\0".as_ptr() as *const c_char,
             // Transponder
-            Self::TransponderSet => "XPNDR_SET\0".as_ptr() as *const c_char
+            Self::TransponderSet => "XPNDR_SET\0".as_ptr() as *const c_char,
         }
     }
 }
@@ -215,7 +219,7 @@ pub enum ClientEvent {
         /// Transponder value eg. 0174
         /// Largest individual digit is 7, transponder values will overflow.
         value: u16,
-    }
+    },
 }
 
 impl TryFrom<&bindings::SIMCONNECT_RECV_EVENT> for ClientEvent {
@@ -287,7 +291,7 @@ impl TryFrom<&bindings::SIMCONNECT_RECV_EVENT> for ClientEvent {
             // Transponder
             ClientEventRequest::TransponderSet => Ok(Self::TransponderSet {
                 value: bcd16_to_u16(event.dwData as u16),
-            })
+            }),
         }
     }
 }
@@ -306,33 +310,63 @@ impl From<ClientEvent> for (ClientEventRequest, u32) {
             ClientEvent::Brakes => (ClientEventRequest::Brakes, 0),
             ClientEvent::BrakesLeft => (ClientEventRequest::BrakesLeft, 0),
             ClientEvent::BrakesRight => (ClientEventRequest::BrakesRight, 0),
-            ClientEvent::AxisLeftBrakeSet { value } => (ClientEventRequest::AxisLeftBrakeSet, value as u32),
-            ClientEvent::AxisRightBrakeSet { value } => (ClientEventRequest::AxisRightBrakeSet, value as u32),
+            ClientEvent::AxisLeftBrakeSet { value } => (
+                ClientEventRequest::AxisLeftBrakeSet,
+                value as u32,
+            ),
+            ClientEvent::AxisRightBrakeSet { value } => (
+                ClientEventRequest::AxisRightBrakeSet,
+                value as u32,
+            ),
             ClientEvent::ParkingBrakes => (ClientEventRequest::ParkingBrakes, 0),
             // Comm Radios
-            ClientEvent::Com1RadioStbySet { value } => (ClientEventRequest::Com1RadioStbySet, (value * 1000000.0) as u32 ),
-            ClientEvent::Com2RadioStbySet { value } => (ClientEventRequest::Com2RadioStbySet, (value * 1000000.0) as u32),
-            ClientEvent::Com3RadioStbySet { value } => (ClientEventRequest::Com3RadioStbySet, (value * 1000000.0) as u32),
+            ClientEvent::Com1RadioStbySet { value } => (
+                ClientEventRequest::Com1RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
+            ClientEvent::Com2RadioStbySet { value } => (
+                ClientEventRequest::Com2RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
+            ClientEvent::Com3RadioStbySet { value } => (
+                ClientEventRequest::Com3RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
             ClientEvent::Com1RadioSwap => (ClientEventRequest::Com1RadioSwap, 0),
             ClientEvent::Com2RadioSwap => (ClientEventRequest::Com2RadioSwap, 0),
             ClientEvent::Com3RadioSwap => (ClientEventRequest::Com3RadioSwap, 0),
             // Nav Radios
-            ClientEvent::Nav1RadioStbySet { value } => (ClientEventRequest::Nav1RadioStbySet, (value * 1000000.0) as u32),
-            ClientEvent::Nav2RadioStbySet { value } => (ClientEventRequest::Nav2RadioStbySet, (value * 1000000.0) as u32),
-            ClientEvent::Nav3RadioStbySet { value } => (ClientEventRequest::Nav3RadioStbySet, (value * 1000000.0) as u32),
-            ClientEvent::Nav4RadioStbySet { value } => (ClientEventRequest::Nav4RadioStbySet, (value * 1000000.0) as u32),
+            ClientEvent::Nav1RadioStbySet { value } => (
+                ClientEventRequest::Nav1RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
+            ClientEvent::Nav2RadioStbySet { value } => (
+                ClientEventRequest::Nav2RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
+            ClientEvent::Nav3RadioStbySet { value } => (
+                ClientEventRequest::Nav3RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
+            ClientEvent::Nav4RadioStbySet { value } => (
+                ClientEventRequest::Nav4RadioStbySet,
+                (value * 1000000.0) as u32,
+            ),
             ClientEvent::Nav1RadioSwap => (ClientEventRequest::Nav1RadioSwap, 0),
             ClientEvent::Nav2RadioSwap => (ClientEventRequest::Nav2RadioSwap, 0),
             ClientEvent::Nav3RadioSwap => (ClientEventRequest::Nav3RadioSwap, 0),
             ClientEvent::Nav4RadioSwap => (ClientEventRequest::Nav4RadioSwap, 0),
             // Transponder
-            ClientEvent::TransponderSet { value } => (ClientEventRequest::TransponderSet, u16_to_bcd16(value) as u32)
+            ClientEvent::TransponderSet { value } => (
+                ClientEventRequest::TransponderSet,
+                u16_to_bcd16(value) as u32,
+            )
         }
     }
 }
 
 /// SimConnect Event Flags for TransmitClientEvent
-/// 
+///
 /// https://www.prepar3d.com/SDKv5/sdk/simconnect_api/references/general_functions.html#SimConnect_TransmitClientEvent
 #[derive(Debug, Copy, Clone, PartialEq, Eq, num_enum::TryFromPrimitive)]
 #[repr(u32)]
