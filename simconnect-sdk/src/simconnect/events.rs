@@ -1,5 +1,5 @@
 use crate::{
-    bindings, success, EventFlag, SimConnect, SimConnectError, SystemEventRequest, ClientEventRequest
+    bindings, success, EventFlag, SimConnect, SimConnectError, SystemEventRequest, ClientEventRequest, ClientEvent
 };
 
 // In order to simplify the usage we're using a single notification group for all client events.
@@ -142,12 +142,12 @@ impl SimConnect {
     pub fn transmit_client_event(
         &mut self,
         object_id: u32,
-        event_id: ClientEventRequest,
-        dword: u32,
+        event: ClientEvent,
         event_flag: EventFlag,
     ) -> Result<(), SimConnectError> {
         success!(unsafe {
-            bindings::SimConnect_TransmitClientEvent(self.handle.as_ptr(), object_id,  event_id as u32, dword, NOTIFICATION_GROUP_ID, event_flag as u32)
+            let event_data: (ClientEventRequest, u32) = event.try_into().unwrap();
+            bindings::SimConnect_TransmitClientEvent(self.handle.as_ptr(), object_id,  event_data.0 as u32, event_data.1, NOTIFICATION_GROUP_ID, event_flag as u32)
         })
     }
 }

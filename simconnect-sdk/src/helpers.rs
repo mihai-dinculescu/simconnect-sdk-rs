@@ -12,3 +12,39 @@ pub fn fixed_c_str_to_string(data: &[i8]) -> String {
 
     result.to_str().unwrap_or_default().to_string()
 }
+
+pub type BCD16 = u16;
+pub fn u16_to_bcd16(value: u16) -> u16 {
+    let mut result: BCD16 = 0;
+    let mut working_value = value;
+    let mut index = 0;
+
+    while index < 4 {
+        let digit = working_value % 10;
+        result = result | (digit << (index * 4));
+        index += 1;
+
+        if working_value > digit {
+            working_value = (working_value - digit) / 10;
+        } else {
+            break;
+        }
+    }
+
+    return result;
+}
+
+pub fn bcd16_to_u16(value: BCD16) -> u16 {
+    let mut result: u16 = 0;
+    let mut working_value = value;
+    let mut index: i8 = 0;
+
+    while index < 4 {
+        let digit = working_value & 15;
+        result += digit;
+        working_value = working_value >> (index * 4);
+        index += 1;
+    }
+
+    return result
+}
