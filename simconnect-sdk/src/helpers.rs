@@ -14,7 +14,7 @@ pub fn fixed_c_str_to_string(data: &[i8]) -> String {
 }
 
 pub type BCD16 = u16;
-pub fn u16_to_bcd16(value: u16) -> u16 {
+pub fn u16_to_bcd16(value: u16) -> BCD16 {
     let mut result: BCD16 = 0;
     let mut working_value = value;
 
