@@ -6,6 +6,8 @@ file. This change log follows the conventions of
 
 ## [Unreleased]
 
+## [v0.2.3] - 2026-02-22
+
 ### Added
 
 - Client events are now implemented through `SimConnect::subscribe_to_client_event`, `SimConnect::unsubscribe_from_client_event` and `SimConnect::unsubscribe_from_all_client_events`.
@@ -89,6 +91,7 @@ file. This change log follows the conventions of
 ### Initial Release of simconnect-sdk
 
 [unreleased]: https://github.com/mihai-dinculescu/simconnect-sdk-rs
+[v0.2.3]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.3
 [v0.2.2]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.2
 [v0.2.1]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.1
 [v0.2.0]: https://github.com/mihai-dinculescu/simconnect-sdk-rs/tree/v0.2.0
