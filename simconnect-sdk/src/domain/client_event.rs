@@ -50,19 +50,19 @@ impl ClientEventRequest {
     pub(crate) fn into_c_char(self) -> *const c_char {
         match self {
             // Aircraft Engine
-            Self::Throttle1Set => "THROTTLE1_SET\0".as_ptr() as *const c_char,
-            Self::Throttle2Set => "THROTTLE2_SET\0".as_ptr() as *const c_char,
-            Self::Throttle3Set => "THROTTLE3_SET\0".as_ptr() as *const c_char,
-            Self::Throttle4Set => "THROTTLE4_SET\0".as_ptr() as *const c_char,
+            Self::Throttle1Set => c"THROTTLE1_SET".as_ptr() as *const c_char,
+            Self::Throttle2Set => c"THROTTLE2_SET".as_ptr() as *const c_char,
+            Self::Throttle3Set => c"THROTTLE3_SET".as_ptr() as *const c_char,
+            Self::Throttle4Set => c"THROTTLE4_SET".as_ptr() as *const c_char,
             // Aircraft Flight Controls
-            Self::AxisElevatorSet => "AXIS_ELEVATOR_SET\0".as_ptr() as *const c_char,
+            Self::AxisElevatorSet => c"AXIS_ELEVATOR_SET".as_ptr() as *const c_char,
             // Aircraft Miscellaneous Systems
-            Self::Brakes => "BRAKES\0".as_ptr() as *const c_char,
-            Self::BrakesLeft => "BRAKES_LEFT\0".as_ptr() as *const c_char,
-            Self::BrakesRight => "BRAKES_RIGHT\0".as_ptr() as *const c_char,
-            Self::AxisLeftBrakeSet => "AXIS_LEFT_BRAKE_SET\0".as_ptr() as *const c_char,
-            Self::AxisRightBrakeSet => "AXIS_RIGHT_BRAKE_SET\0".as_ptr() as *const c_char,
-            Self::ParkingBrakes => "PARKING_BRAKES\0".as_ptr() as *const c_char,
+            Self::Brakes => c"BRAKES".as_ptr() as *const c_char,
+            Self::BrakesLeft => c"BRAKES_LEFT".as_ptr() as *const c_char,
+            Self::BrakesRight => c"BRAKES_RIGHT".as_ptr() as *const c_char,
+            Self::AxisLeftBrakeSet => c"AXIS_LEFT_BRAKE_SET".as_ptr() as *const c_char,
+            Self::AxisRightBrakeSet => c"AXIS_RIGHT_BRAKE_SET".as_ptr() as *const c_char,
+            Self::ParkingBrakes => c"PARKING_BRAKES".as_ptr() as *const c_char,
         }
     }
 }

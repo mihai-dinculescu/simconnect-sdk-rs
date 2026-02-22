@@ -54,31 +54,31 @@ pub enum SystemEventRequest {
 impl SystemEventRequest {
     pub(crate) fn into_c_char(self) -> *const c_char {
         match self {
-            SystemEventRequest::OneSecond => "1sec\0".as_ptr() as *const c_char,
-            SystemEventRequest::FourSeconds => "4sec\0".as_ptr() as *const c_char,
-            SystemEventRequest::SixTimesPerSecond => "6Hz\0".as_ptr() as *const c_char,
-            SystemEventRequest::AircraftLoaded => "AircraftLoaded\0".as_ptr() as *const c_char,
-            SystemEventRequest::Crashed => "Crashed\0".as_ptr() as *const c_char,
-            SystemEventRequest::CrashReset => "CrashReset\0".as_ptr() as *const c_char,
-            SystemEventRequest::FlightLoaded => "FlightLoaded\0".as_ptr() as *const c_char,
-            SystemEventRequest::FlightSaved => "FlightSaved\0".as_ptr() as *const c_char,
+            SystemEventRequest::OneSecond => c"1sec".as_ptr() as *const c_char,
+            SystemEventRequest::FourSeconds => c"4sec".as_ptr() as *const c_char,
+            SystemEventRequest::SixTimesPerSecond => c"6Hz".as_ptr() as *const c_char,
+            SystemEventRequest::AircraftLoaded => c"AircraftLoaded".as_ptr() as *const c_char,
+            SystemEventRequest::Crashed => c"Crashed".as_ptr() as *const c_char,
+            SystemEventRequest::CrashReset => c"CrashReset".as_ptr() as *const c_char,
+            SystemEventRequest::FlightLoaded => c"FlightLoaded".as_ptr() as *const c_char,
+            SystemEventRequest::FlightSaved => c"FlightSaved".as_ptr() as *const c_char,
             SystemEventRequest::FlightPlanActivated => {
-                "FlightPlanActivated\0".as_ptr() as *const c_char
+                c"FlightPlanActivated".as_ptr() as *const c_char
             }
             SystemEventRequest::FlightPlanDeactivated => {
-                "FlightPlanDeactivated\0".as_ptr() as *const c_char
+                c"FlightPlanDeactivated".as_ptr() as *const c_char
             }
-            SystemEventRequest::Frame => "Frame\0".as_ptr() as *const c_char,
-            SystemEventRequest::Pause => "Pause\0".as_ptr() as *const c_char,
-            SystemEventRequest::Paused => "Paused\0".as_ptr() as *const c_char,
-            SystemEventRequest::PauseFrame => "PauseFrame\0".as_ptr() as *const c_char,
-            SystemEventRequest::PositionChanged => "PositionChanged\0".as_ptr() as *const c_char,
-            SystemEventRequest::Sim => "Sim\0".as_ptr() as *const c_char,
-            SystemEventRequest::SimStart => "SimStart\0".as_ptr() as *const c_char,
-            SystemEventRequest::SimStop => "SimStop\0".as_ptr() as *const c_char,
-            SystemEventRequest::Sound => "Sound\0".as_ptr() as *const c_char,
-            SystemEventRequest::Unpaused => "Unpaused\0".as_ptr() as *const c_char,
-            SystemEventRequest::View => "View\0".as_ptr() as *const c_char,
+            SystemEventRequest::Frame => c"Frame".as_ptr() as *const c_char,
+            SystemEventRequest::Pause => c"Pause".as_ptr() as *const c_char,
+            SystemEventRequest::Paused => c"Paused".as_ptr() as *const c_char,
+            SystemEventRequest::PauseFrame => c"PauseFrame".as_ptr() as *const c_char,
+            SystemEventRequest::PositionChanged => c"PositionChanged".as_ptr() as *const c_char,
+            SystemEventRequest::Sim => c"Sim".as_ptr() as *const c_char,
+            SystemEventRequest::SimStart => c"SimStart".as_ptr() as *const c_char,
+            SystemEventRequest::SimStop => c"SimStop".as_ptr() as *const c_char,
+            SystemEventRequest::Sound => c"Sound".as_ptr() as *const c_char,
+            SystemEventRequest::Unpaused => c"Unpaused".as_ptr() as *const c_char,
+            SystemEventRequest::View => c"View".as_ptr() as *const c_char,
         }
     }
 }

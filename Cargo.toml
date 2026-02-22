@@ -1,6 +1,4 @@
 [workspace]
-members = [
-    "examples",
-    "simconnect-sdk",
-    "simconnect-sdk-derive",
-]
+resolver = "3"
+
+members = ["examples", "simconnect-sdk", "simconnect-sdk-derive"]
