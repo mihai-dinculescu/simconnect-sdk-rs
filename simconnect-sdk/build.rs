@@ -19,7 +19,7 @@ fn main() {
     };
 
     let bindings = builder
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .clang_args(&["-x", "c++"])
         .allowlist_function("SimConnect_AddClientEventToNotificationGroup")
         .allowlist_function("SimConnect_AddToDataDefinition")
